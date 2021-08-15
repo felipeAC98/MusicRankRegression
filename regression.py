@@ -27,8 +27,11 @@ print(X.head())
 #Aplicando one hot enconding
 X = transform.useOneHotEncoder(X, 'main_genre')
 #X = transform.useOneHotEncoder(X, 'related_genre') #precisa corrigir, nao esta dividindo o array em diferentes subcategorias
-
 print(X.head())
+
+X = transform.splitMusicnnTags(X)
+print(X.head())
+
 print(X.columns)
 
 # Fit regression model
