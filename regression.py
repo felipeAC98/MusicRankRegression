@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-import oneHotEncoder
+import transform
 from sklearn import neighbors
 from sklearn.model_selection import train_test_split
 from sklearn import preprocessing
@@ -19,11 +19,14 @@ X.drop(columns=['art_name'],inplace=True)
 X.drop(columns=['music_name'],inplace=True)
 X.drop(columns=['related_genre'],inplace=True)
 
+Y = X['mus_rank']
+X=X.drop(columns=['mus_rank'])
+
 print(X.head())
 
 #Aplicando one hot enconding
-X = oneHotEncoder.useOneHotEncoder(X, 'main_genre')
-#X = oneHotEncoder.useOneHotEncoder(X, 'related_genre') #precisa corrigir, nao esta dividindo o array em diferentes subcategorias
+X = transform.useOneHotEncoder(X, 'main_genre')
+#X = transform.useOneHotEncoder(X, 'related_genre') #precisa corrigir, nao esta dividindo o array em diferentes subcategorias
 
 print(X.head())
 print(X.columns)
@@ -32,8 +35,6 @@ print(X.columns)
 n_neighbors = 5
 
 knn = neighbors.KNeighborsRegressor(n_neighbors)
-Y = X['mus_rank']
-X=X.drop(columns=['mus_rank'])
 
 x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.2)
 
