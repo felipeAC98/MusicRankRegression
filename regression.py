@@ -29,7 +29,17 @@ X = transform.useOneHotEncoder(X, 'main_genre')
 #X = transform.useOneHotEncoder(X, 'related_genre') #precisa corrigir, nao esta dividindo o array em diferentes subcategorias
 print(X.head())
 
+#Splitando a feature de musicnn_tags
 X = transform.splitMusicnnTags(X)
+print(X.head())
+
+X = transform.useOneHotEncoder(X, 'musicnn_tags1', 'musicnn_tags')
+print(X.head())
+
+X = transform.useOneHotEncoder(X, 'musicnn_tags2', 'musicnn_tags', merge=True)
+print(X.head())
+
+X = transform.useOneHotEncoder(X, 'musicnn_tags3', 'musicnn_tags', merge=True)
 print(X.head())
 
 print(X.columns)

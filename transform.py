@@ -1,7 +1,8 @@
 from sklearn.preprocessing import OneHotEncoder
 import pandas as pd
+import numpy as np
 
-def useOneHotEncoder(data, feature):
+def useOneHotEncoder(data, feature, featureNamePattern=None, merge=False):
 
 	enc = OneHotEncoder(handle_unknown='ignore')
 
@@ -15,14 +16,33 @@ def useOneHotEncoder(data, feature):
 	categories=[]
 	for categori in enc.get_feature_names():
 
-		featureName=feature+'-'+str(categori)
+		if featureNamePattern==None:
+			featureName=feature+'-'+str(categori)
+		else:
+			featureName=featureNamePattern+'-'+str(categori)
 		featureName=featureName.replace('x0_','')
 		categories.append(featureName)
 	
 	enc_df.columns =categories
 
-	#retornando df com o one hot encode ja incluido
-	return data.join(enc_df)
+	if merge==False:
+		#retornando df com o one hot encode ja incluido
+		return data.join(enc_df)
+
+	else:
+		#para casos onde as features do novo e antigo df forem as mesmas
+		return mergeOneHotEncoder(data, enc_df)
+
+def mergeOneHotEncoder(data, newEncData):
+	print("mergeOneHotEncoder")
+
+	for index, row in newEncData.iterrows():
+		for rowIndex in row.index:
+			#quando for 1, o valor sera substituido 
+			if str(row[rowIndex])=='1.0':
+				data.loc[index,rowIndex]='1.0'
+
+	return data.replace(np.nan, '0.0')
 
 def splitMusicnnTags(data):
 
