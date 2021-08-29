@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import transform
-from sklearn import neighbors
+import regressionModels
 from sklearn.model_selection import train_test_split
 from sklearn import preprocessing
 from sklearn import metrics
@@ -44,17 +44,11 @@ print(X.head())
 
 print(X.columns)
 
-# Fit regression model
-n_neighbors = 5
-
-knn = neighbors.KNeighborsRegressor(n_neighbors)
-
+#Split
 x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.2)
 
-knn.fit(x_train, y_train)
+nNeighbors = 5
 
-preResult=knn.predict(x_test)
+score=regressionModels.kNeighborsRegressorScore(x_train, y_train, x_test, y_test,nNeighbors)
 
-acuracia = knn.score(x_test, y_test)
-
-print(acuracia)
+print(score)
