@@ -51,10 +51,10 @@ knn = neighbors.KNeighborsRegressor(n_neighbors)
 
 x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.2)
 
-knnFit = knn.fit(X, Y)
+knn.fit(x_train, y_train)
 
-preResult=knnFit.predict(x_test)
+preResult=knn.predict(x_test)
 
-acuracia = metrics.accuracy_score(y_test, preResult)
+acuracia = knn.score(x_test, y_test)
 
 print(acuracia)
