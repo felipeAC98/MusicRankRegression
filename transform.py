@@ -46,6 +46,7 @@ def mergeOneHotEncoder(data, newEncData):
 
 def splitMusicnnTags(data):
 
+	#criando um novo df que sera mergiado posteriormente
 	musicnnTagsDF= pd.DataFrame({'musicnn_tags1':[],'musicnn_tags2':[],'musicnn_tags3':[]})  
 
 	for index, row in data.iterrows():
