@@ -64,13 +64,15 @@ print(X.columns)
 
 #Trabalhando na feature main genre, para a versao final o OneHotEncoder sera usado
 
-#X = transform.useOneHotEncoder(X, 'main_genre')
+X = transform.useOneHotEncoder(X, 'main_genre')
 #Passando genero principal de categorias string para numerica
-X['main_genre']=pd.factorize(X['main_genre'])[0]
+#X['main_genre']=pd.factorize(X['main_genre'])[0]
 
 print(X.head())
 
 print(X.columns)
+
+principaisColunas=['position', 'danceability','energy','mode','speechiness','acousticness','instrumentalness','liveness']
 
 #obtendo release time
 try:
@@ -79,12 +81,12 @@ try:
 
 	print(X.columns)
 
-	df_principalFeatures=X[['position', 'main_genre', 'danceability','energy','mode','speechiness','acousticness','instrumentalness','liveness','release_time']]
+	principaisColunas.append('release_time')
 
 except:
 	print(' release_time nao encontrada: '+str(traceback.format_exc()))
 
-	df_principalFeatures=X[['position', 'main_genre', 'danceability','energy','mode','speechiness','acousticness','instrumentalness','liveness']]
+df_principalFeatures=X[principaisColunas]
 
 #Distribuicao das musicas pelo rank
 
