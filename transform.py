@@ -65,14 +65,14 @@ def splitMusicnnTags(data):
 	return data.join(musicnnTagsDF)
 
 #funcao para obter quantidade de meses que se passaram desde o lancamento da musica
-def monthsAfterRelease(data):
+def monthsAfterRelease(data, newFeatureName='release_time'):
 
 	from datetime import datetime
 
 	#criando um novo df que sera mergiado posteriormente
-	mesesPosReleaseDF= pd.DataFrame({'release_time':[]})  
+	mesesPosReleaseDF= pd.DataFrame({newFeatureName:[]})  
 
-	hoje = datetime.date.today()
+	hoje = datetime.today()
 
 	mesAtual=hoje.month
 
@@ -82,7 +82,10 @@ def monthsAfterRelease(data):
 
 		release_date=row['release_date']
 
-		release_date_obj = datetime.strptime(release_date, '%y/%d/%m')
+		try:
+			release_date_obj = datetime.strptime(release_date, '%Y-%m-%d')
+		except:
+			release_date_obj = datetime.strptime(release_date, '%Y')
 
 		anoLancamento=release_date_obj.year
 
@@ -96,7 +99,7 @@ def monthsAfterRelease(data):
 		else:
 			mesesPassadosPosLancamento=mesAtual-mesLancamento
 
-		newRow={'release_time': mesesPassadosPosLancamento}
+		newRow={newFeatureName: mesesPassadosPosLancamento}
 		mesesPosReleaseDF = mesesPosReleaseDF.append(newRow, ignore_index=True)
 
 	#removendo a musicnn_tags 

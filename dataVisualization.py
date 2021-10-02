@@ -8,9 +8,9 @@ from sklearn import preprocessing
 from sklearn import metrics
 
 #Obtendo dados
-matchSpotify4Mula =("matchSpotify4Mula-large.csv")
+matchSpotify4Mula =("matchSpotify4Mula-tiny.csv")
 #features=['music_id', 'music_name', 'music_lang', 'art_id','art_name', 'art_rank', 'main_genre', 'related_genre','musicnn_tags','danceability','energy','key','mode','speechiness','acousticness','instrumentalness','liveness','valence','tempo','duration_ms','time_signature','period','position','mus_rank']
-features=['music_id', 'music_name', 'music_lang', 'art_id','art_name', 'art_rank', 'main_genre', 'related_genre','musicnn_tags','danceability','energy','key','mode','speechiness','acousticness','instrumentalness','liveness','valence','tempo','duration_ms','time_signature','period','position','mus_rank']
+features=['music_id', 'music_name', 'music_lang', 'art_id','art_name', 'art_rank', 'main_genre', 'related_genre','musicnn_tags','danceability','energy','key','mode','speechiness','acousticness','instrumentalness','liveness','valence','tempo','duration_ms','time_signature','release_date','period','position','mus_rank']
 
 X = pd.read_csv(matchSpotify4Mula, sep=',', names = features)
 
@@ -21,7 +21,7 @@ X.drop(columns=['art_name'],inplace=True)
 X.drop(columns=['music_name'],inplace=True)
 X.drop(columns=['related_genre'],inplace=True)
 X.drop(columns=['period'],inplace=True)
-X.drop(columns=['musicnn_tags'],inplace=True)
+#X.drop(columns=['musicnn_tags'],inplace=True)
 
 Y = X['mus_rank']
 print(Y)
@@ -34,7 +34,6 @@ print(X.head())
 #X = transform.useOneHotEncoder(X, 'related_genre') #precisa corrigir, nao esta dividindo o array em diferentes subcategorias
 print(X.head())
 
-'''
 #Splitando a feature de musicnn_tags
 X = transform.splitMusicnnTags(X)
 print(X.head())
@@ -48,7 +47,9 @@ print(X.head())
 
 X = transform.useOneHotEncoder(X, 'musicnn_tags3', 'musicnn_tags', merge=True)
 print(X.head())
-'''
+
+X = transform.monthsAfterRelease(X,'release_time')
+print(X.head())
 
 print(X.columns)
 
@@ -68,7 +69,7 @@ plt.savefig('plots/mus_rank-histplot_log.png')
 
 #Relaçao entre features
 
-df_principalFeatures=X[['mus_rank', 'main_genre', 'danceability','energy','mode','speechiness','acousticness','instrumentalness','liveness']]
+df_principalFeatures=X[['mus_rank', 'main_genre', 'danceability','energy','mode','speechiness','acousticness','instrumentalness','liveness','release_time']]
 
 sns.pairplot(df_principalFeatures, kind="scatter", hue="mus_rank") 
 plt.savefig('plots/mus_rank-pairplot.png')
@@ -76,7 +77,7 @@ plt.savefig('plots/mus_rank-pairplot.png')
 #Distribuicao das musicas pela posicao
 
 plt.figure(figsize=(12, 8))
-plt.title("Distribuicao das musicas por rank")
+plt.title("Distribuicao das musicas por posicao")
 plt.xlabel("Rank")
 plt.ylabel("Quantidade de musicas")
 sns.histplot(x = 'position', data =X, kde=True)
@@ -86,10 +87,3 @@ plt.savefig('plots/position-histplot.png')
 
 sns.histplot(x = 'position', data =X, kde=True, log_scale=True)
 plt.savefig('plots/position-histplot_log.png')
-
-#Relaçao entre features
-
-df_principalFeatures=X[['position', 'main_genre', 'danceability','energy','mode','speechiness','acousticness','instrumentalness','liveness']]
-
-sns.pairplot(df_principalFeatures, kind="scatter", hue="position") 
-plt.savefig('plots/position-pairplot.png')
