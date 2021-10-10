@@ -118,8 +118,7 @@ sns.histplot(x = 'mus_rank', data =X, kde=True, log_scale=True)
 plt.savefig('plots/'+nomeDB+'-mus_rank-histplot_log.png')
 
 #Relaçao entre features
-
-sns.pairplot(df_principalFeatures, kind="scatter", hue="position", palette="rocket") 
+'''sns.pairplot(df_principalFeatures, kind="scatter", hue="position", palette="rocket") 
 plt.savefig('plots/'+nomeDB+'-position-cat_pairplot.png')
 
 g=sns.pairplot(df_principalFeatures, diag_kind="kde") 
@@ -128,3 +127,15 @@ plt.savefig('plots/'+nomeDB+'-position-level_pairplot.png')
 
 sns.pairplot(df_principalFeatures, kind="kde") 
 plt.savefig('plots/'+nomeDB+'-position-levelFull_pairplot.png')
+
+'''
+
+cmap = sns.cubehelix_palette(as_cmap=True)
+num_features = len(df_principalFeatures.columns)
+fig,ax = plt.subplots(num_features, num_features, figsize=(50,50))
+for axi, i in zip(ax, df_principalFeatures.columns):
+    print(i)
+    for axj, j in zip(axi, df_principalFeatures.columns):
+            axj.scatter(x=df_principalFeatures[i],y=df_principalFeatures[j],c=df_principalFeatures['position'],s=50 , cmap=cmap)
+
+plt.savefig('plots/'+nomeDB+'-position-cat_pairplot2.png')
