@@ -44,7 +44,6 @@ X = transform.useOneHotEncoder(X, 'main_genre')
 print(X.head())
 
 #X = X.dropna(axis='columns')
-print(X[X.isnull().any(axis=1)])
 
 print(X.head())
 print(len(X.index))

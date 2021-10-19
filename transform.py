@@ -7,13 +7,14 @@ def useOneHotEncoder(data, feature, featureNamePattern=None, merge=False):
 	enc = OneHotEncoder(handle_unknown='ignore')
 
 	#fazendo o encode e ja passando para um df temporario
-	enc_df = pd.DataFrame(enc.fit_transform(data[[feature]]).toarray())
+	#enc_df = pd.DataFrame(enc.fit_transform(data[[feature]]).toarray())
+	enc_df = pd.get_dummies(data[feature])
 
 	#removendo a feature que esta sofrendo o one hot encoder
 	data.drop(columns=[feature],inplace=True)
 
 	#inserindo nomes mais compreensiveis nas features do df criado
-	categories=[]
+	'''categories=[]
 	for categori in enc.get_feature_names():
 
 		if featureNamePattern==None:
@@ -22,8 +23,8 @@ def useOneHotEncoder(data, feature, featureNamePattern=None, merge=False):
 			featureName=featureNamePattern+'-'+str(categori)
 		featureName=featureName.replace('x0_','')
 		categories.append(featureName)
-	
-	enc_df.columns =categories
+
+	enc_df.columns =categories'''
 
 	if merge==False:
 		#retornando df com o one hot encode ja incluido
