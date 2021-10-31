@@ -71,7 +71,7 @@ def monthsAfterRelease(data, newFeatureName='release_time'):
 	from datetime import datetime
 
 	#criando um novo df que sera mergiado posteriormente
-	mesesPosReleaseDF= pd.DataFrame({newFeatureName:[]})  
+	mesesPosReleaseDF= []  
 
 	hoje = datetime.today()
 
@@ -86,7 +86,10 @@ def monthsAfterRelease(data, newFeatureName='release_time'):
 		try:
 			release_date_obj = datetime.strptime(release_date, '%Y-%m-%d')
 		except:
-			release_date_obj = datetime.strptime(release_date, '%Y')
+			try:
+				release_date_obj = datetime.strptime(release_date, '%Y')
+			except:
+				release_date_obj = datetime.strptime(release_date, '%Y-%m')
 
 		anoLancamento=release_date_obj.year
 
@@ -95,15 +98,14 @@ def monthsAfterRelease(data, newFeatureName='release_time'):
 		mesesPassadosPosLancamento=(anoAtual-anoLancamento)*12
 
 		if(anoAtual!=anoLancamento):
-			mesesPassadosPosLancamento=mesAtual-mesLancamento
+			mesesPassadosPosLancamento=mesesPassadosPosLancamento+mesAtual-mesLancamento
 
 		else:
-			mesesPassadosPosLancamento=mesAtual-mesLancamento
-
-		newRow={newFeatureName: mesesPassadosPosLancamento}
-		mesesPosReleaseDF = mesesPosReleaseDF.append(newRow, ignore_index=True)
+			mesesPassadosPosLancamento=mesesPassadosPosLancamento+mesAtual-mesLancamento
+		mesesPosReleaseDF.append(mesesPassadosPosLancamento)
 
 	#removendo a musicnn_tags 
-	data.drop(columns=['release_date'],inplace=True)
-
-	return data.join(mesesPosReleaseDF)
+	data.drop(columns=['release_date'],inplace=True)  
+	data.insert(2,newFeatureNamemesesPosReleaseDF,True)
+	
+	return data
