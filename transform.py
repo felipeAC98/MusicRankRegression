@@ -106,6 +106,23 @@ def monthsAfterRelease(data, newFeatureName='release_time'):
 
 	#removendo a musicnn_tags 
 	data.drop(columns=['release_date'],inplace=True)  
-	data.insert(2,newFeatureNamemesesPosReleaseDF,True)
+	data.insert(2,newFeatureName,mesesPosReleaseDF)
 	
+	return data
+
+def recountColumn(data, column):
+	#ordernando os valores
+	data=data.sort_values(by=column, ascending=True)
+
+	newValues=[]
+	i=0
+
+	for index, row in data.iterrows():
+
+		newValues.append(i)
+		i+=1
+
+	data.drop(columns=column,inplace=True)  
+	data.insert(0,column,newValues)
+	print(data.head())
 	return data

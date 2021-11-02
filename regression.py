@@ -26,10 +26,9 @@ X.drop(columns=['related_genre'],inplace=True)
 
 #X.drop(columns=['release_date'],inplace=True)
 X.drop(columns=['musicnn_tags'],inplace=True)
-print(X.head())
-print(len(X.index))
+print("Total de amostras: "+str(len(X.index)))
 
-X = X.drop(X[X.position > 40000].index) 
+#X = X.drop(X[X.position >50000].index) 
 
 X.drop(columns=['mus_rank'],inplace=True)
 X.drop(columns=['period'],inplace=True)
@@ -40,17 +39,14 @@ X = transform.useOneHotEncoder(X, 'main_genre')
 X = transform.useOneHotEncoder(X, 'music_lang')
 #X = transform.useOneHotEncoder(X, 'related_genre') #precisa corrigir, nao esta dividindo o array em diferentes subcategorias
 
-print(X.head())
+#Recontando as posicoes das musicas, para ficar um valor continuo
+X=transform.recountColumn(X,'position')
+X=transform.recountColumn(X,'art_rank')
 
-#X = X.dropna(axis='columns')
-
-print(X.head())
-print(len(X.index))
 Y = X['position']
 
 X.drop(columns=['position'],inplace=True)
 
-print(len(Y.index))
 #Splitando a feature de musicnn_tags
 try:
 	X = transform.splitMusicnnTags(X)
@@ -76,6 +72,8 @@ except:
 print(X.columns)
 print(len(X.index))
 
+#==============================
+
 #Split
 x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.1)
 
@@ -85,7 +83,7 @@ ytest_np=y_test.to_numpy()
 #KNN Regression
 from sklearn.neighbors import KNeighborsRegressor
 
-nNeighbors = 10
+nNeighbors = 20
 KNNR = KNeighborsRegressor(n_neighbors=nNeighbors)
 KNNR.fit(x_train, y_train)
 print(KNNR.predict(xtest_np[:10]))
@@ -103,23 +101,24 @@ print(gpr.predict(xtest_np[:10]))
 print("gpr.score: " +str(gpr.score(x_test,y_test)))
 
 #Gaussian + bang
-
+'''
 from sklearn.ensemble import BaggingRegressor
 
 breg = BaggingRegressor(base_estimator=GaussianProcessRegressor(),n_estimators=10, random_state=0).fit(x_train, y_train)
 print(breg.predict(xtest_np[:10]))
 print("breg: " +str(breg.score(x_test,y_test)))
-
+'''
 #MultinomialNB
+'''
 from sklearn.naive_bayes import MultinomialNB
 MNBreg = MultinomialNB()
 MNBreg.fit(x_train, y_train)
 
 print(MNBreg.predict(xtest_np[:10]))
 print("MultinomialNB score: " +str(MNBreg.score(x_test,y_test)))
-
+'''
 #SVM regression
-
+'''
 from sklearn import svm
 
 regr = svm.SVR()
@@ -127,27 +126,27 @@ regr.fit(x_train, y_train)
 
 print(regr.predict(xtest_np[:10]))
 print("SVM score: " +str(regr.score(x_test,y_test)))
-
+'''
 #SGDRegressor
 
-from sklearn.linear_model import SGDRegressor
+'''from sklearn.linear_model import SGDRegressor
 
 sgdr = SGDRegressor(max_iter=2000, tol=1e-3)
 sgdr.fit(x_train, y_train)
 
 print(sgdr.predict(xtest_np[:10]))
 print("SGDRegressor score: " +str(sgdr.score(x_test,y_test)))
-
+'''
 #MLPRegressor
 
 from sklearn.neural_network import MLPRegressor
 
-mlpReg = MLPRegressor(random_state=1, max_iter=800).fit(x_train, y_train)
+mlpReg = MLPRegressor(random_state=1, max_iter=1000).fit(x_train, y_train)
 print(mlpReg.predict(xtest_np[:10]))
 print("MLPReg score: " +str(mlpReg.score(x_test,y_test)))
 
 #Decision Tree Regression
-
+'''
 from sklearn import tree
 
 treeR = tree.DecisionTreeRegressor()
@@ -155,5 +154,5 @@ treeR.fit(x_train, y_train)
 
 print(treeR.predict(xtest_np[:10]))
 print("treeR score: " +str(treeR.score(x_test,y_test)))
-
+'''
 print(ytest_np[:10])
