@@ -23,34 +23,34 @@ features=_4mulaFeatureNames+['spotify_trackID']+_spotifyBasicAudioFeature+['spot
 X = pd.read_csv(matchSpotify4Mula, sep=',', names = features)
 print(X.head())
 
-X.drop(columns=['spotify_trackID'],inplace=True)
-X.drop(columns=['spotifyAlbum_id'],inplace=True)
-X.drop(columns=['spotifyArt_id'],inplace=True)
+#Diminuindo dataset
+#X = X.drop(X[X.position >30000].index) 
 
-for featureName in _spotifyAudioAnalysisTrack:
-	X.drop(columns=featureName,inplace=True)
-
-#for featureName in _spotifyAudioAnalysis:
-#	X.drop(columns=featureName,inplace=True)
-
+#Remocoes de features pertencentes ao _4mulaFeatureNames
 X.drop(columns=['music_id'],inplace=True)
-#X.drop(columns=['popularity'],inplace=True)
-#X.drop(columns=['music_lang'],inplace=True)
 X.drop(columns=['art_id'],inplace=True)
 X.drop(columns=['art_name'],inplace=True)
 X.drop(columns=['music_name'],inplace=True)
 X.drop(columns=['related_genre'],inplace=True)
+X.drop(columns=['art_rank4Mula'],inplace=True)
 
-#X.drop(columns=['release_date'],inplace=True)
-X.drop(columns=['musicnn_tags'],inplace=True)
-print("Total de amostras: "+str(len(X.index)))
+#Remocoes de features pertencentes ao _spotifyAudioAnalysisTrack
+for featureName in _spotifyAudioAnalysisTrack:
+	X.drop(columns=featureName,inplace=True)
 
-X = X.drop(X[X.position >60000].index) 
+#Remocoes de features gerais
+X.drop(columns=['spotify_trackID'],inplace=True)
+X.drop(columns=['spotifyAlbum_id'],inplace=True)
+X.drop(columns=['spotifyArt_id'],inplace=True)
 
+#Remocoes de features vagalume
 #X.drop(columns=['art_rank'],inplace=True)
 X.drop(columns=['mus_rank'],inplace=True)
 X.drop(columns=['period'],inplace=True)
-X.drop(columns=['art_rank4Mula'],inplace=True)
+
+X.drop(columns=['musicnn_tags'],inplace=True)
+print("Total de amostras: "+str(len(X.index)))
+
 X=X.dropna()
 
 #Aplicando one hot enconding
@@ -58,30 +58,17 @@ X = transform.useOneHotEncoder(X, 'main_genre','genre-')
 X = transform.useOneHotEncoder(X, 'music_lang')
 
 #Recontando as posicoes das musicas, para ficar um valor continuo
-X=transform.recountColumn(X,'position')
+#X=transform.recountColumn(X,'position')
 #X=transform.recountColumn(X,'popularity')
-
-#Splitando a feature de musicnn_tags
-try:
-	X = transform.splitMusicnnTags(X)
-
-	#o segundo parametro é o parametro a ser utilizado o oneHot e o terceiro é o index dos novos campos que vao ser criados
-	X = transform.useOneHotEncoder(X, 'musicnn_tags1', 'musicnn_tags')
-
-	X = transform.useOneHotEncoder(X, 'musicnn_tags2', 'musicnn_tags', merge=True)
-
-	X = transform.useOneHotEncoder(X, 'musicnn_tags3', 'musicnn_tags', merge=True)
-
-except:
-	print(' musicnn tags nao encontrada: '+str(traceback.format_exc()))
 
 #obtendo release time
 try:
-	X = transform.monthsAfterRelease(X,'release_date1')
-	#print(X[X.isna().any(axis=1)].head())
+	X = transform.monthsAfterRelease(X,'release_date')
 
 except:
 	print(' release_time nao encontrada: '+str(traceback.format_exc()))
+
+#========== Y sera o indice de popularidade do spotify
 
 Y = X['popularity']
 
@@ -158,13 +145,13 @@ print(sgdr.predict(xtest_np[:10]))
 print("SGDRegressor score: " +str(sgdr.score(x_test,y_test)))
 '''
 #MLPRegressor
-
+'''
 from sklearn.neural_network import MLPRegressor
 
 mlpReg = MLPRegressor(random_state=1, max_iter=500,activation='relu',solver='adam',learning_rate_init=0.001).fit(x_train, y_train)
 print(mlpReg.predict(xtest_np))
 print("MLPReg score: " +str(mlpReg.score(x_test,y_test)))
-
+'''
 #Decision Tree Regression
 '''
 from sklearn import tree
