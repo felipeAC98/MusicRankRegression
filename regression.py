@@ -19,8 +19,17 @@ _spotifyAudioAnalysis=['bars','beats','sections','segments','tatums']
 
 features=_4mulaFeatureNames+['spotify_trackID']+_spotifyBasicAudioFeature+['spotifyAlbum_id']+['release_date'] +['popularity']+['spotifyArt_id']+_spotifyAudioAnalysisTrack+_spotifyAudioAnalysis+['period']+['position']+['mus_rank']+['art_rank']
 
-
 X = pd.read_csv(matchSpotify4Mula, sep=',', names = features)
+
+spotifyFeatures=['spotify_trackID','spotify_artID','totalFollowers','artPopularity']
+spotifyFeaturesDF = pd.read_csv('spotifyOnlyFeatures.csv', sep=',', names = spotifyFeatures)
+print(spotifyFeaturesDF.head())
+
+#Adicionando novas features do spotify ao df
+spotifyFeaturesDF.drop(columns=['spotify_trackID'],inplace=True)
+spotifyFeaturesDF.drop(columns=['spotify_artID'],inplace=True)
+spotifyFeaturesDF.drop(columns=['artPopularity'],inplace=True)
+X=X.join(spotifyFeaturesDF)
 print(X.head())
 
 #Diminuindo dataset
@@ -35,8 +44,8 @@ X.drop(columns=['related_genre'],inplace=True)
 X.drop(columns=['art_rank4Mula'],inplace=True)
 
 #Remocoes de features pertencentes ao _spotifyAudioAnalysisTrack
-for featureName in _spotifyAudioAnalysisTrack:
-	X.drop(columns=featureName,inplace=True)
+#for featureName in _spotifyAudioAnalysisTrack:
+#	X.drop(columns=featureName,inplace=True)
 
 #Remocoes de features gerais
 X.drop(columns=['spotify_trackID'],inplace=True)
@@ -44,7 +53,7 @@ X.drop(columns=['spotifyAlbum_id'],inplace=True)
 X.drop(columns=['spotifyArt_id'],inplace=True)
 
 #Remocoes de features vagalume
-#X.drop(columns=['art_rank'],inplace=True)
+X.drop(columns=['art_rank'],inplace=True)
 X.drop(columns=['mus_rank'],inplace=True)
 X.drop(columns=['period'],inplace=True)
 
@@ -56,12 +65,13 @@ X=X.dropna()
 #Aplicando one hot enconding
 X = transform.useOneHotEncoder(X, 'main_genre','genre-')
 X = transform.useOneHotEncoder(X, 'music_lang')
+#X = transform.useOneHotEncoder(X, 'art_name')
 
 #Recontando as posicoes das musicas, para ficar um valor continuo
 #X=transform.recountColumn(X,'position')
 #X=transform.recountColumn(X,'popularity')
 
-#obtendo release time
+#obtendo release time - tempo em meses em que a musica foi lancada
 try:
 	X = transform.monthsAfterRelease(X,'release_date')
 
@@ -75,26 +85,44 @@ Y = X['popularity']
 X.drop(columns=['position'],inplace=True)
 X.drop(columns=['popularity'],inplace=True)
 
-for column in X.columns:
-	print(column)
+#for column in X.columns:
+#	print(column)
 print(len(X.index))
 
 #==============================
+#Aplicando feature selection
+from sklearn.svm import LinearSVC
+from sklearn.feature_selection import SelectFromModel
+from sklearn.linear_model import LogisticRegression
+#lsvc = LinearSVC(C=0.01, penalty="l1", dual=False).fit(X, Y)
+#logRe=LogisticRegression().fit(X, Y)
+#selector = SelectFromModel(logRe, prefit=True)
+#print(selector.get_support())
+#X=selector.transform(X)
 
 #Split
 x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.2)
 
-xtest_np=x_test.to_numpy()[:10]
-ytest_np=y_test.to_numpy()[:10]
+xtest_np=x_test[:10]
+ytest_np=y_test[:10]
 
 #KNN Regression
 from sklearn.neighbors import KNeighborsRegressor
 
-nNeighbors = 9
+nNeighbors = 15
 KNNR = KNeighborsRegressor(n_neighbors=nNeighbors)
 KNNR.fit(x_train, y_train)
 print(KNNR.predict(xtest_np))
 print("KNNR score: " +str(KNNR.score(x_test,y_test)))
+
+#KNN Regression + bang
+'''
+from sklearn.ensemble import BaggingRegressor
+
+breg = BaggingRegressor(base_estimator=KNeighborsRegressor(n_neighbors=nNeighbors),n_estimators=50, random_state=0).fit(x_train, y_train)
+print(breg.predict(xtest_np))
+print("KNN + bang: " +str(breg.score(x_test,y_test)))
+'''
 #score=regressionModels.kNeighborsRegressorScore(x_train, y_train, x_test, y_test,nNeighbors)
 
 #Gaussian regression
@@ -165,9 +193,22 @@ print("treeR score: " +str(treeR.score(x_test,y_test)))
 #Random Forest
 
 from sklearn.ensemble import RandomForestRegressor
-randFr = RandomForestRegressor(min_impurity_decrease=0.005, random_state=0)
+randFr = RandomForestRegressor(n_estimators=200,min_impurity_decrease=0.0005, random_state=0)
 randFr.fit(x_train, y_train)
 print(randFr.predict(xtest_np))
 print("RandomForestRegressor score: " +str(randFr.score(x_test,y_test)))
+
+from sklearn.model_selection import cross_val_score
+scores = cross_val_score(randFr, X, Y, cv=5)
+print("RandomForestRegressor cross_val_score: " +str(scores))
+
+#Extra Random Forest
+
+from sklearn.ensemble import ExtraTreesRegressor 
+extTree = ExtraTreesRegressor(min_impurity_decrease=0.0005, random_state=0)
+extTree.fit(x_train, y_train)
+print(extTree.predict(xtest_np))
+print("ExtraTreesRegressor  score: " +str(extTree.score(x_test,y_test)))
+
 
 print(ytest_np)
