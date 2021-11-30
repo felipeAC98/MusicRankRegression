@@ -6,61 +6,9 @@ from sklearn.model_selection import train_test_split
 from sklearn import preprocessing
 from sklearn import metrics
 import traceback
+from musicData import musicData, getPrepMusData
 
-#Obtendo dados
-nomeDB="matchSpotify4Mula-metadata"
-matchSpotify4Mula =(nomeDB+".csv")
-
-_4mulaFeatureNames=['music_id', 'music_name', 'music_lang', 'art_id','art_name', 'art_rank4Mula', 'main_genre', 'related_genre','musicnn_tags']
-
-_spotifyBasicAudioFeature=['danceability','energy','key','mode','speechiness','loudness','acousticness','instrumentalness','liveness','valence','tempo','duration_ms','time_signature']
-_spotifyAudioAnalysisTrack=['num_samples','tempo_confidence','time_signature_confidence','key_confidence','mode_confidence']
-_spotifyAudioAnalysis=['bars','beats','sections','segments','tatums']
-
-features=_4mulaFeatureNames+['spotify_trackID']+_spotifyBasicAudioFeature+['spotifyAlbum_id']+['release_date'] +['popularity']+['spotifyArt_id']+_spotifyAudioAnalysisTrack+_spotifyAudioAnalysis+['period']+['position']+['mus_rank']+['art_rank']
-
-X = pd.read_csv(matchSpotify4Mula, sep=',', names = features)
-
-spotifyFeatures=['spotify_trackID','spotify_artID','totalFollowers','artPopularity']
-spotifyFeaturesDF = pd.read_csv('spotifyOnlyFeatures.csv', sep=',', names = spotifyFeatures)
-print(spotifyFeaturesDF.head())
-
-#Adicionando novas features do spotify ao df
-spotifyFeaturesDF.drop(columns=['spotify_trackID'],inplace=True)
-spotifyFeaturesDF.drop(columns=['spotify_artID'],inplace=True)
-spotifyFeaturesDF.drop(columns=['artPopularity'],inplace=True)
-X=X.join(spotifyFeaturesDF)
-print(X.head())
-
-#Diminuindo dataset
-#X = X.drop(X[X.position >30000].index) 
-
-#Remocoes de features pertencentes ao _4mulaFeatureNames
-X.drop(columns=['music_id'],inplace=True)
-X.drop(columns=['art_id'],inplace=True)
-X.drop(columns=['art_name'],inplace=True)
-X.drop(columns=['music_name'],inplace=True)
-X.drop(columns=['related_genre'],inplace=True)
-X.drop(columns=['art_rank4Mula'],inplace=True)
-
-#Remocoes de features pertencentes ao _spotifyAudioAnalysisTrack
-#for featureName in _spotifyAudioAnalysisTrack:
-#	X.drop(columns=featureName,inplace=True)
-
-#Remocoes de features gerais
-X.drop(columns=['spotify_trackID'],inplace=True)
-X.drop(columns=['spotifyAlbum_id'],inplace=True)
-X.drop(columns=['spotifyArt_id'],inplace=True)
-
-#Remocoes de features vagalume
-X.drop(columns=['art_rank'],inplace=True)
-X.drop(columns=['mus_rank'],inplace=True)
-X.drop(columns=['period'],inplace=True)
-
-X.drop(columns=['musicnn_tags'],inplace=True)
-print("Total de amostras: "+str(len(X.index)))
-
-X=X.dropna()
+X=getPrepMusData()
 
 #Aplicando one hot enconding
 X = transform.useOneHotEncoder(X, 'main_genre','genre-')
@@ -193,14 +141,14 @@ print("treeR score: " +str(treeR.score(x_test,y_test)))
 #Random Forest
 
 from sklearn.ensemble import RandomForestRegressor
-randFr = RandomForestRegressor(n_estimators=200,min_impurity_decrease=0.0005, random_state=0)
+randFr = RandomForestRegressor(min_impurity_decrease=0.0005, random_state=0)
 randFr.fit(x_train, y_train)
 print(randFr.predict(xtest_np))
 print("RandomForestRegressor score: " +str(randFr.score(x_test,y_test)))
 
-from sklearn.model_selection import cross_val_score
-scores = cross_val_score(randFr, X, Y, cv=5)
-print("RandomForestRegressor cross_val_score: " +str(scores))
+#from sklearn.model_selection import cross_val_score
+#scores = cross_val_score(randFr, X, Y, cv=5)
+#print("RandomForestRegressor cross_val_score: " +str(scores))
 
 #Extra Random Forest
 
