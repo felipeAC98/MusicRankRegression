@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import transform
-
+from sklearn.model_selection import train_test_split
 import traceback
 
 class music_data():
@@ -26,6 +26,12 @@ class music_data():
 
 	def merge_music_data(self, musicData):
 		self.df=self.df.join(musicData.df)
+
+	def train_test_split(self,targetFeatureName="popularity", testSize=0.2):
+		targetDF=self.df[targetFeatureName]
+		self.df.drop(columns=[targetFeatureName],inplace=True)
+		
+		self.xTrain, self.xTest, self.yTrain,self.yTest = train_test_split(self.df, targetDF, test_size=0.2)
 
 def get_prep_mus_data():
 

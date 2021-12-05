@@ -33,8 +33,8 @@ for dropPercent in dropPercents:
 	
 	print("Tamanho do df: "+str(len(musicDataTemp.df.index)))
 
+	musicDataTemp.train_test_split(targetFeatureName="popularity")
 	regressorObj=regressor(musicDataTemp)
-	regressorObj.train_test_split()
-
+	
 	print("KNN score: "+str(regressorObj.knn_score()))
 	print("Extra tree score: "+ str(regressorObj.extra_tree_score()))
