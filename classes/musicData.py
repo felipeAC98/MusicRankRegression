@@ -4,7 +4,7 @@ import transform
 from sklearn.model_selection import train_test_split
 import traceback
 
-class music_data():
+class music_data_entity():
 
 	def __init__(self,nomeDB,features):
 		self.nomeDB=nomeDB
@@ -43,7 +43,7 @@ def get_prep_mus_data():
 
 	features=_4mulaFeatureNames+['spotify_trackID']+_spotifyBasicAudioFeature+['spotifyAlbum_id']+['release_date'] +['popularity']+['spotifyArt_id']+_spotifyAudioAnalysisTrack+_spotifyAudioAnalysis+['period']+['position']+['mus_rank']+['art_rank']
 
-	musData=music_data("matchSpotify4Mula-metadata",features)
+	musData=music_data_entity("matchSpotify4Mula-metadata",features)
 	musData.read_csv()
 	
 	#Criacao de vetor com as features para remocao
@@ -53,7 +53,7 @@ def get_prep_mus_data():
 
 	#Obtendo dadaos somente do spotify
 	features=['spotify_trackID','spotify_artID','totalFollowers','artPopularity']
-	spotifyData=music_data("spotifyOnlyFeatures",features)
+	spotifyData=music_data_entity("spotifyOnlyFeatures",features)
 	spotifyData.read_csv()
 	#Criacao de vetor com as features para remocao
 	featuresParaRemover=['spotify_trackID','spotify_artID','artPopularity']

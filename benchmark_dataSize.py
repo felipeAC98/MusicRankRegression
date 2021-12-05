@@ -1,5 +1,5 @@
-from classes.musicData import music_data, get_prep_mus_data
-from classes.regressor import regressor
+from classes.musicData import music_data_entity, get_prep_mus_data
+import classes.regressor
 import transform
 import traceback
 import pandas as pd
@@ -34,7 +34,11 @@ for dropPercent in dropPercents:
 	print("Tamanho do df: "+str(len(musicDataTemp.df.index)))
 
 	musicDataTemp.train_test_split(targetFeatureName="popularity")
-	regressorObj=regressor(musicDataTemp)
-	
-	print("KNN score: "+str(regressorObj.knn_score()))
-	print("Extra tree score: "+ str(regressorObj.extra_tree_score()))
+
+	#KNN regressor score
+	knn_regressor=classes.regressor.knn_regressor(musicDataTemp,n_neighbors=15)
+	print("KNN score: "+str(knn_regressor.get_score()))
+
+	#Extra forest score
+	randon_extra_tree_regressor=classes.regressor.randon_extra_tree_regressor(musicDataTemp,min_impurity_decrease=0.0005)
+	print("Extra score: "+str(randon_extra_tree_regressor.get_score()))	
