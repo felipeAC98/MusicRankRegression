@@ -2,13 +2,40 @@ from sklearn.preprocessing import OneHotEncoder
 import pandas as pd
 import numpy as np
 
+def useGetDumies(data, feature, featureNamePattern=None, merge=False):
+
+	enc_df = pd.get_dummies(data[feature])
+
+	#removendo a feature que esta sofrendo o one hot encoder
+	data.drop(columns=[feature],inplace=True)
+
+	#inserindo nomes mais compreensiveis nas features do df criado
+	categories=[]
+	for categori in enc_df.columns:
+
+		if featureNamePattern==None:
+			featureName=feature+'-'+str(categori)
+		else:
+			featureName=featureNamePattern+'-'+str(categori)
+		featureName=featureName.replace('x0_','')
+		categories.append(featureName)
+
+	enc_df.columns =categories
+
+	if merge==False:
+		#retornando df com o one hot encode ja incluido
+		return data.join(enc_df)
+
+	else:
+		#para casos onde as features do novo e antigo df forem as mesmas
+		return mergeOneHotEncoder(data, enc_df)
+
 def useOneHotEncoder(data, feature, featureNamePattern=None, merge=False):
 
-	#enc = OneHotEncoder(handle_unknown='ignore')
+	enc = OneHotEncoder(handle_unknown='ignore')
 
 	#fazendo o encode e ja passando para um df temporario
-	#enc_df = pd.DataFrame(enc.fit_transform(data[[feature]]).toarray())
-	enc_df = pd.get_dummies(data[feature])
+	enc_df = pd.DataFrame(enc.fit_transform(data[[feature]]).toarray())
 
 	#removendo a feature que esta sofrendo o one hot encoder
 	data.drop(columns=[feature],inplace=True)
