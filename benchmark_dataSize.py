@@ -42,7 +42,15 @@ for dropPercent in dropPercents:
 	#Extra forest score
 	tree_regressor=classes.regressor.tree_regressor(musicDataTemp,min_impurity_decrease=0.1)
 	print("tree_regressor score: "+str(tree_regressor.get_score()))	
-	
+
 	#Extra forest score
-	randon_extra_tree_regressor=classes.regressor.randon_extra_tree_regressor(musicDataTemp,min_impurity_decrease=0.001)
-	print("Extra score: "+str(randon_extra_tree_regressor.get_score()))	
+	randon_forest_regressor=classes.regressor.randon_forest_regressor(musicDataTemp,min_impurity_decrease=0.001)
+	print("Random Forest score: "+str(randon_forest_regressor.get_score()))	
+
+	#Extra forest score
+	xgboost_regressor=classes.regressor.xgboost_regressor(musicDataTemp,learning_rate=0.1,
+			max_depth= 3,
+			subsample=0.8,
+			n_jobs=-1,
+			random_state=42)
+	print("XGboost score: "+str(xgboost_regressor.get_score()))	

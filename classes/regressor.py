@@ -1,9 +1,12 @@
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.ensemble import ExtraTreesRegressor 
+from sklearn.metrics import mean_squared_error, r2_score
 from sklearn import tree
 import graphviz 
 import pylab
+import xgboost as xgb
+
 
 class regressor():
 
@@ -47,11 +50,11 @@ class tree_regressor(regressor):
 
 class randon_forest_regressor(regressor):
 
-    def __init__(self, musicData, **params):
-        super().__init__(musicData)
-        self.model=RandomForestRegressor(**params)
-       	self.fit()
-        self.params=params
+	def __init__(self, musicData, **params):
+		super().__init__(musicData)
+		self.model=RandomForestRegressor(**params)
+		self.fit()
+		self.params=params
 
 class randon_extra_tree_regressor(regressor):
 
@@ -60,3 +63,16 @@ class randon_extra_tree_regressor(regressor):
         self.model=ExtraTreesRegressor(**params)
        	self.fit()
         self.params=params
+
+class xgboost_regressor(regressor):
+
+	def __init__(self, musicData, **params):
+		super().__init__(musicData)
+		self.model= xgb.XGBRegressor(**params)
+		self.fit()
+		self.params=params
+
+	def get_score(self):
+		yPred = self.model.predict(self.musicData.xTest)
+		self.score=r2_score(self.musicData.yTest, yPred)
+		return self.score
