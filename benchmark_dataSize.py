@@ -44,5 +44,5 @@ for dropPercent in dropPercents:
 	print("tree_regressor score: "+str(tree_regressor.get_score()))	
 	
 	#Extra forest score
-	randon_extra_tree_regressor=classes.regressor.randon_extra_tree_regressor(musicDataTemp,min_impurity_decrease=0.1)
+	randon_extra_tree_regressor=classes.regressor.randon_extra_tree_regressor(musicDataTemp,min_impurity_decrease=0.001)
 	print("Extra score: "+str(randon_extra_tree_regressor.get_score()))	
