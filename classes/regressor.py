@@ -2,7 +2,7 @@ from sklearn.neighbors import KNeighborsRegressor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.ensemble import ExtraTreesRegressor 
 from sklearn.ensemble import AdaBoostRegressor
-from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.metrics import mean_squared_error, r2_score, mean_squared_error, mean_absolute_error, mean_absolute_percentage_error
 from sklearn import tree
 from sklearn.neural_network import MLPRegressor
 import graphviz 
@@ -22,8 +22,19 @@ class regressor():
 		self.model.fit(self.musicData.xTrain, self.musicData.yTrain)
 
 	def get_score(self):
-		self.score=self.model.score(self.musicData.xTest,self.musicData.yTest)
+		yPred = self.model.predict(self.musicData.xTest)
+		self.score=r2_score(self.musicData.yTest, yPred)
 		return self.score
+
+	def get_MSE_score(self):
+		yPred = self.model.predict(self.musicData.xTest)
+		self.MSE=mean_squared_error(self.musicData.yTest, yPred)
+		return self.MSE
+
+	def get_MAE_score(self):
+		yPred = self.model.predict(self.musicData.xTest)
+		self.MAE=mean_absolute_error(self.musicData.yTest, yPred)
+		return self.MAE
 
 class knn_regressor(regressor):
 
@@ -75,11 +86,6 @@ class xgboost_regressor(regressor):
 		self.fit()
 		self.params=params
 
-	def get_score(self):
-		yPred = self.model.predict(self.musicData.xTest)
-		self.score=r2_score(self.musicData.yTest, yPred)
-		return self.score
-
 class mlp_regressor(regressor):
 
 	def __init__(self, musicData, **params):
@@ -128,11 +134,11 @@ class keras_sequential_regressor(regressor):
 		#Batch: One or more samples considered by the model within an epoch before weights are updated.
 		self.model.fit(self.musicData.xTrain, self.musicData.yTrain, epochs=600, batch_size=700)
 
-	def get_score(self):
-		yPred = self.model.predict(self.musicData.xTest)
-		self.score=r2_score(self.musicData.yTest, yPred)
-		return self.score
-
 	def get_accuracy(self):
 		_, accuracy = self.model.evaluate(self.musicData.xTest,self.musicData.yTest) 
 		return accuracy
+
+	def get_F1score(self):
+		yPred = self.model.predict(self.musicData.xTest)
+		self.F1score=f1_score(self.musicData.yTest, yPred, average=None)
+		return self.score

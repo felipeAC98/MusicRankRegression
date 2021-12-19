@@ -38,19 +38,40 @@ for dropPercent in dropPercents:
 	#KNN regressor score
 	knn_regressor=classes.regressor.knn_regressor(musicDataTemp,n_neighbors=15)
 	print("KNN score: "+str(knn_regressor.get_score()))
+	print("knn_regressor MSE score: "+str(knn_regressor.get_MSE_score()))	
+	print("knn_regressor MAE score: "+str(knn_regressor.get_MAEP_score()))	
 
-	#Extra forest score
+	#Tree score
 	tree_regressor=classes.regressor.tree_regressor(musicDataTemp,min_impurity_decrease=0.1)
 	print("tree_regressor score: "+str(tree_regressor.get_score()))	
+	print("tree_regressor MSE score: "+str(tree_regressor.get_MSE_score()))	
+	print("tree_regressor MAE score: "+str(tree_regressor.get_MAEP_score()))	
 
-	#Extra forest score
+
+	#Random forest score
 	randon_forest_regressor=classes.regressor.randon_forest_regressor(musicDataTemp,min_impurity_decrease=0.001)
 	print("Random Forest score: "+str(randon_forest_regressor.get_score()))	
 
-	#Extra forest score
+	#MLP score
+	mlp_regressor=classes.regressor.mlp_regressor(musicDataTemp,random_state=1, max_iter=500,activation='relu',solver='adam',hidden_layer_sizes=(50,50,50,50,))
+	print("MLP score: "+str(mlp_regressor.get_score()))	
+
+	#Keras score
+	keras_sequential_regressor=classes.regressor.keras_sequential_regressor(musicDataTemp)
+	print("Keras score: "+str(keras_sequential_regressor.get_score()))	
+
+	#AdaBoost score
+	adaboost_regressor=classes.regressor.adaboost_regressor(musicDataTemp,n_estimators=100)
+	print("AdaBoost score: "+str(adaboost_regressor.get_score()))	
+	print("AdaBoost MSE score: "+str(adaboost_regressor.get_MSE_score()))	
+	print("AdaBoost MAE score: "+str(adaboost_regressor.get_MAEP_score()))		
+
+	#Xgboost score
 	xgboost_regressor=classes.regressor.xgboost_regressor(musicDataTemp,learning_rate=0.1,
 			max_depth= 3,
 			subsample=0.8,
 			n_jobs=-1,
 			random_state=42)
 	print("XGboost score: "+str(xgboost_regressor.get_score()))	
+
+	break
