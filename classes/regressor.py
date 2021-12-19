@@ -1,12 +1,15 @@
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.ensemble import ExtraTreesRegressor 
+from sklearn.ensemble import AdaBoostRegressor
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn import tree
+from sklearn.neural_network import MLPRegressor
 import graphviz 
 import pylab
 import xgboost as xgb
-
+from keras.models import Sequential
+from keras.layers import Dense
 
 class regressor():
 
@@ -21,7 +24,7 @@ class regressor():
 	def get_score(self):
 		self.score=self.model.score(self.musicData.xTest,self.musicData.yTest)
 		return self.score
-		
+
 class knn_regressor(regressor):
 
 	def __init__(self, musicData, **params):
@@ -76,3 +79,60 @@ class xgboost_regressor(regressor):
 		yPred = self.model.predict(self.musicData.xTest)
 		self.score=r2_score(self.musicData.yTest, yPred)
 		return self.score
+
+class mlp_regressor(regressor):
+
+	def __init__(self, musicData, **params):
+		super().__init__(musicData)
+		self.model= MLPRegressor(**params)
+		self.fit()
+		self.params=params
+
+class adaboost_regressor(regressor):
+
+	def __init__(self, musicData, **params):
+		super().__init__(musicData)
+		self.model= AdaBoostRegressor(**params)
+		self.fit()
+		self.params=params
+
+class keras_sequential_regressor(regressor):
+
+	def __init__(self, musicData, **params):
+		super().__init__(musicData)
+		self.model= self.keras_sequential_model(**params)
+		self.fit()
+		self.params=params
+
+	def keras_sequential_model(self,**params):
+		inputDim=len(self.musicData.df.columns)
+		firstLayer=inputDim
+
+		model=Sequential()
+		model.add(Dense(firstLayer, input_dim=inputDim, kernel_initializer='normal', activation='relu'))
+		model.add(Dense(firstLayer*2,  kernel_initializer='normal', activation='relu'))
+		model.add(Dense(firstLayer*4,  kernel_initializer='normal', activation='relu'))
+		model.add(Dense(firstLayer, kernel_initializer='normal', activation='relu'))
+		model.add(Dense(firstLayer, kernel_initializer='normal', activation='relu'))
+		#model.add(Dense(firstLayer, kernel_initializer='normal', activation='relu'))
+		model.add(Dense(int(firstLayer/2), kernel_initializer='normal', activation='relu'))
+		model.add(Dense(int(firstLayer/8), kernel_initializer='normal', activation='relu'))
+		model.add(Dense(1, kernel_initializer='normal'))
+		model.compile(loss='mean_squared_error', optimizer='Adamax')
+
+		return model
+
+	def fit(self):
+
+		#Epoch: One pass through all of the rows in the training dataset.
+		#Batch: One or more samples considered by the model within an epoch before weights are updated.
+		self.model.fit(self.musicData.xTrain, self.musicData.yTrain, epochs=600, batch_size=700)
+
+	def get_score(self):
+		yPred = self.model.predict(self.musicData.xTest)
+		self.score=r2_score(self.musicData.yTest, yPred)
+		return self.score
+
+	def get_accuracy(self):
+		_, accuracy = self.model.evaluate(self.musicData.xTest,self.musicData.yTest) 
+		return accuracy
