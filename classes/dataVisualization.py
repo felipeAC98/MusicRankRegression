@@ -45,3 +45,10 @@ class data_visualization():
 		self.set_figure_size(length=length, height=height)
 		sns.boxplot(targetFeature1, targetFeature2, data = self.musicData.df)
 		self.save_figure(str(targetFeature1)+'_by_'+str(targetFeature2),"plot_boxplot")
+
+	def plot_corr_matrix(self):
+		self.set_figure_size(length=20, height=20)
+		corrMatrix = self.musicData.df.corr()
+		sns.heatmap(corrMatrix, annot=True)
+		#plt.show()
+		self.save_figure("correlation","plot_corr_matrix")

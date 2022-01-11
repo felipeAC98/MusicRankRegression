@@ -66,3 +66,37 @@ def get_prep_mus_data():
 	musData.df=musData.df.dropna()
 
 	return musData
+
+def get_prep_mus_vis_data():
+
+	_4mulaFeatureNames=['music_id', 'music_name', 'music_lang', 'art_id','art_name', 'art_rank4Mula', 'main_genre', 'related_genre','musicnn_tags']
+
+	_spotifyBasicAudioFeature=['danceability','energy','key','mode','speechiness','loudness','acousticness','instrumentalness','liveness','valence','tempo','duration_ms','time_signature']
+	_spotifyAudioAnalysisTrack=['num_samples','tempo_confidence','time_signature_confidence','key_confidence','mode_confidence']
+	_spotifyAudioAnalysis=['bars','beats','sections','segments','tatums']
+
+	features=_4mulaFeatureNames+['spotify_trackID']+_spotifyBasicAudioFeature+['spotifyAlbum_id']+['release_date'] +['popularity']+['spotifyArt_id']+_spotifyAudioAnalysisTrack+_spotifyAudioAnalysis+['period']+['position']+['mus_rank']+['art_rank']
+
+	musData=music_data_entity("matchSpotify4Mula-metadata",features)
+	musData.read_csv()
+	
+	#Criacao de vetor com as features para remocao
+	featuresParaRemover=['position','music_id','art_id','art_name','music_name','related_genre','art_rank4Mula','spotify_trackID','spotifyAlbum_id','spotifyArt_id','art_rank','mus_rank','period','musicnn_tags']
+	#Removendo features
+	musData.drop_columns(featuresParaRemover)
+
+	#Obtendo dadaos somente do spotify
+	features=['spotify_trackID','spotify_artID','totalFollowers','artPopularity']
+	spotifyData=music_data_entity("spotifyOnlyFeatures",features)
+	spotifyData.read_csv()
+	#Criacao de vetor com as features para remocao
+	featuresParaRemover=['spotify_trackID','spotify_artID']
+	#Removendo features
+	spotifyData.drop_columns(featuresParaRemover)
+
+	#Mergeando os dois dfs
+	musData.merge_music_data(spotifyData)
+
+	musData.df=musData.df.dropna()
+
+	return musData
