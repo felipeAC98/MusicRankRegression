@@ -4,6 +4,7 @@ from sklearn.ensemble import ExtraTreesRegressor
 from sklearn.ensemble import AdaBoostRegressor
 from sklearn.metrics import mean_squared_error, r2_score, mean_squared_error, mean_absolute_error, mean_absolute_percentage_error
 from sklearn import tree
+from sklearn.model_selection import GridSearchCV, TimeSeriesSplit
 from sklearn.neural_network import MLPRegressor
 import graphviz 
 import pylab
@@ -70,6 +71,16 @@ class randon_forest_regressor(regressor):
 		self.fit()
 		self.params=params
 
+class grid_randon_forest_regressor(regressor):
+
+	def __init__(self, musicData, **params):
+		super().__init__(musicData)
+		self.model=RandomForestRegressor()
+		self.params=params
+		self.model= GridSearchCV(estimator = self.model,param_grid=params, n_jobs = -1, verbose = 2)
+		self.fit()
+
+
 class randon_extra_tree_regressor(regressor):
 
     def __init__(self, musicData, **params):
@@ -85,6 +96,18 @@ class xgboost_regressor(regressor):
 		self.model= xgb.XGBRegressor(**params)
 		self.fit()
 		self.params=params
+
+class grid_xgboost_regressor(regressor):
+
+	def __init__(self, musicData, params):
+		super().__init__(musicData)
+		self.model=xgb.XGBRegressor()
+		self.params=params
+		self.model= GridSearchCV(estimator = self.model,param_grid=params, verbose = 2)
+		self.fit()
+
+	def get_best_param(self):
+		return self.model.best_params_
 
 class mlp_regressor(regressor):
 
