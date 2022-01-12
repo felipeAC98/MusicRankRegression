@@ -20,7 +20,13 @@ dataVisualization=data_visualization(musicData)
 
 #dataVisualization.plot_distribution(targetFeature="popularity")
 
-#dataVisualization.plot_qtd_musics_by(targetFeature="main_genre",length=60, height=20)
+#dataVisualization.plot_distribution(targetFeature="mus_rank",length=20, height=15)
+
+#dataVisualization.plot_log_distribution(targetFeature="mus_rank",length=10, height=8)
+
+#dataVisualization.plot_qtd_musics_by_genre(ident="main_genre",fontScale=5,hideXLabels=True, showValues=False)
+
+dataVisualization.plot_qtd_musics_by_genre(ident="main_genre_detailed",length=60, height=40,fontScale=None,hideXLabels=False,showValues=True)
 
 #dataVisualization.plot_qtd_musics_by(targetFeature="release_date")
 
@@ -29,4 +35,4 @@ dataVisualization=data_visualization(musicData)
 #Precisa corrigir, mas eh um plot interessante
 #dataVisualization.plot_boxplot(targetFeature1="release_date",targetFeature2="popularity")
 
-dataVisualization.plot_corr_matrix()
+#dataVisualization.plot_corr_matrix()

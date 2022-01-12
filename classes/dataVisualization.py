@@ -22,21 +22,56 @@ class data_visualization():
 		self.plt.savefig(str(self.path)+str(figID)+'-'+figureName)
 
 	def plot_distribution(self,targetFeature="popularity",length=50, height=30):
-		self.plt.title("Distribuicao das musicas por popularidade")
+		#self.plt.title("Distribuicao das musicas por popularidade")
+		self.set_figure_size(length=length, height=height)
 		self.plt.xlabel(targetFeature)
 		self.plt.ylabel("Quantidade de musicas")
-
-		sns.histplot(x = targetFeature, data =self.musicData.df, kde=True)
+		sns.displot(x = targetFeature, data =self.musicData.df, kde=True)
 		self.save_figure(targetFeature,"plot_distribution")
 
-	def plot_qtd_musics_by(self,targetFeature,length=50, height=30):
-		self.plt.title("Quantidade de musicas por '"+str(targetFeature)+ "'")
+	def plot_log_distribution(self,targetFeature="popularity",length=50, height=30):
+		#self.plt.title("Distribuicao das musicas por popularidade")
 		self.plt.xlabel(targetFeature)
 		self.plt.ylabel("Quantidade de musicas")
+
+		sns.histplot(x =targetFeature, data =self.musicData.df, kde=True, log_scale=True)
+		self.save_figure(targetFeature,"plot_log_distribution")
+
+	def plot_qtd_musics_by(self,targetFeature,length=50, height=30):
+		#self.plt.title("Quantidade de musicas por '"+str(targetFeature)+ "'")
+		self.set_figure_size(length=length, height=height)
+		sns.set(font_scale = 5)
+		sns.countplot(x = targetFeature, data =self.musicData.df)
+
+		#self.plt.xlabel(targetFeature)
+		self.plt.ylabel("Quantidade de musicas")
+
+
+		self.save_figure(targetFeature,"plot_qtd_musics_by")
+
+	def plot_qtd_musics_by_genre(self,ident="main_genre",length=50, height=30,fontScale=None,hideXLabels=True,showValues=False):
+		#self.plt.title("Quantidade de musicas por '"+str(targetFeature)+ "'")
+		targetFeature="main_genre"
 		self.set_figure_size(length=length, height=height)
 
-		sns.countplot(x = targetFeature, data =self.musicData.df)
-		self.save_figure(targetFeature,"plot_qtd_musics_by")
+		if fontScale!=None:
+			sns.set(font_scale = fontScale)
+
+		countplot=sns.countplot(x = targetFeature, data =self.musicData.df)
+
+		if hideXLabels:
+			countplot.set(xticklabels=[])
+
+		#self.plt.xlabel(targetFeature)
+		self.plt.ylabel("Quantidade de musicas")
+
+		if showValues==True:
+			for p in countplot.patches:
+				x=p.get_bbox().get_points()[:,0]
+				y=p.get_bbox().get_points()[1,1]
+				countplot.annotate(str(y),(x.mean(), y)) # set the alignment of the text
+
+		self.save_figure(ident,"plot_qtd_musics_by")
 
 	def plot_boxplot(self,targetFeature1,targetFeature2,length=20, height=30):
 
@@ -47,7 +82,7 @@ class data_visualization():
 		self.save_figure(str(targetFeature1)+'_by_'+str(targetFeature2),"plot_boxplot")
 
 	def plot_corr_matrix(self):
-		self.set_figure_size(length=20, height=20)
+		self.set_figure_size(length=23, height=21)
 		corrMatrix = self.musicData.df.corr()
 		sns.heatmap(corrMatrix, annot=True)
 		#plt.show()
