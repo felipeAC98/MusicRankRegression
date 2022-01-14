@@ -4,6 +4,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.ensemble import ExtraTreesRegressor 
 import matplotlib.pyplot as plt
 import seaborn as sns
+import plotly.express as px
 
 class data_visualization():
 
@@ -72,6 +73,10 @@ class data_visualization():
 				countplot.annotate(str(y),(x.mean(), y)) # set the alignment of the text
 
 		self.save_figure(ident,"plot_qtd_musics_by")
+
+	def plot_polar_graph(self,targetFeature='main_genre'):
+		fig = px.line_polar(self.musicData.df, r=targetFeature, theta=targetFeature, line_close=True)
+		fig.write_image("newPlots/"+str(targetFeature)+"_plot_polar_graph.jpeg")
 
 	def plot_boxplot(self,targetFeature1,targetFeature2,length=20, height=30):
 
