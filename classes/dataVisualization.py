@@ -25,9 +25,9 @@ class data_visualization():
 	def plot_distribution(self,targetFeature="popularity",length=50, height=30):
 		#self.plt.title("Distribuicao das musicas por popularidade")
 		self.set_figure_size(length=length, height=height)
+		sns.displot(x = targetFeature, data =self.musicData.df, kde=True)
 		self.plt.xlabel(targetFeature)
 		self.plt.ylabel("Quantidade de musicas")
-		sns.displot(x = targetFeature, data =self.musicData.df, kde=True)
 		self.save_figure(targetFeature,"plot_distribution")
 
 	def plot_log_distribution(self,targetFeature="popularity",length=50, height=30):
@@ -74,6 +74,26 @@ class data_visualization():
 
 		self.save_figure(ident,"plot_qtd_musics_by")
 
+	def plot_qtd_musics_by_release_time(self,ident="release_time",length=50, height=30,fontScale=None,showValues=False):
+		#self.plt.title("Quantidade de musicas por '"+str(targetFeature)+ "'")
+		targetFeature="release_time"
+		self.set_figure_size(length=length, height=height)
+
+		if fontScale!=None:
+			sns.set(font_scale = fontScale)
+
+		countplot=sns.countplot(x = targetFeature, data =self.musicData.df)
+
+		self.plt.xlabel("Meses passados desde o lançamento")
+		self.plt.ylabel("Quantidade de musicas")
+
+		myXticks = countplot.get_xticks()
+
+		self.plt.xticks(
+          [myXticks[0], myXticks[-1]], 
+          [myXticks[0],myXticks[-1]], visible=True, rotation="horizontal")
+		self.save_figure(ident,"plot_qtd_musics_by")
+
 	def plot_polar_graph(self,targetFeature='main_genre'):
 		fig = px.line_polar(self.musicData.df, r=targetFeature, theta=targetFeature, line_close=True)
 		fig.write_image("newPlots/"+str(targetFeature)+"_plot_polar_graph.jpeg")
@@ -83,6 +103,7 @@ class data_visualization():
 		#f, axes = plt.subplots(2, 2, figsize=(15, 15), sharex=False)
 		#sns.despine(left=True)
 		self.set_figure_size(length=length, height=height)
+		sns.set(font_scale = 3)
 		sns.boxplot(targetFeature1, targetFeature2, data = self.musicData.df)
 		self.save_figure(str(targetFeature1)+'_by_'+str(targetFeature2),"plot_boxplot")
 
