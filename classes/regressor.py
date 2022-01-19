@@ -37,12 +37,22 @@ class regressor():
 		self.MAE=mean_absolute_error(self.musicData.yTest, yPred)
 		return self.MAE
 
+	def grid_search(self, params):
+		self.model= GridSearchCV(estimator = self.model,param_grid=params, n_jobs = -1, verbose = 2)
+		self.fit()
+		return self.model.best_params_
+
+	def get_grid_best_params(self):
+		return self.model.best_params_
+
+	def get_grid_best_score(self):
+		return self.model.best_score_
+
 class knn_regressor(regressor):
 
 	def __init__(self, musicData, **params):
 		super().__init__(musicData)
 		self.model=KNeighborsRegressor(**params) #**despactando o dict para mandar os parametros para a funcao interna
-		self.fit()
 		self.params=params
 
 class tree_regressor(regressor):
@@ -50,7 +60,6 @@ class tree_regressor(regressor):
 	def __init__(self, musicData, **params):
 		super().__init__(musicData)
 		self.model=tree.DecisionTreeRegressor(**params)
-		self.fit()
 		self.params=params
 
 	def plot_tree(self):
@@ -94,7 +103,6 @@ class xgboost_regressor(regressor):
 	def __init__(self, musicData, **params):
 		super().__init__(musicData)
 		self.model= xgb.XGBRegressor(**params)
-		self.fit()
 		self.params=params
 
 class grid_xgboost_regressor(regressor):
