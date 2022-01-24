@@ -24,36 +24,42 @@ musicData.train_test_split(targetFeatureName="popularity")
 #======= KNN #=======
 
 #regressor score
-'''
+
 #GRID search 
+'''
 KNN_grid_params={
-	'n_neighbors':[10,20,30,40,50]
+	'n_neighbors':[10,20,30,50,100,200],
+	'weights':['uniform', 'distance']
 }
 knn_regressor=classes.regressor.knn_regressor(musicData)
 print(knn_regressor.grid_search(KNN_grid_params))
 print(knn_regressor.get_grid_best_score())
-'''
+#'''
 
 '''
 #Tree score
 tree_grid_params={
-	'min_impurity_decrease':[0.05,0.1,0.2,0.5,1]
+	'criterion':["squared_error","absolute_error","friedman_mse","poisson"],
+	'min_impurity_decrease':[0.05,0.1,0.2,0.5,1],
+	'max_features':['auto','none']
 }
 
 tree_regressor=classes.regressor.tree_regressor(musicData)
 print(tree_regressor.grid_search(tree_grid_params))
 print(tree_regressor.get_grid_best_score())
 '''
-
+#'''
 #Random forest
 rf_grid_params={
-	'min_impurity_decrease':[0.0005,0.005,0.05,0.1,0.2]
+	'criterion':["squared_error"],
+	'min_impurity_decrease':[0.0005,0.005,0.001,0.05],
+	'n_estimators':[100,200,400]
 }
 
 randon_forest_regressor=classes.regressor.randon_forest_regressor(musicData)
 print(randon_forest_regressor.grid_search(rf_grid_params))
 print(randon_forest_regressor.get_grid_best_score())
-
+#'''
 
 #Xgboost score
 '''

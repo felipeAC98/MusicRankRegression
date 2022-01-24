@@ -11,6 +11,7 @@ import pylab
 import xgboost as xgb
 from keras.models import Sequential
 from keras.layers import Dense
+import numpy as np
 
 class regressor():
 
@@ -18,6 +19,8 @@ class regressor():
 		self.musicData=musicData
 		self.model=None
 		self.score=None
+		self.MSE=None
+		self.RMSE=None
 
 	def fit(self):
 		self.model.fit(self.musicData.xTrain, self.musicData.yTrain)
@@ -32,13 +35,31 @@ class regressor():
 		self.MSE=mean_squared_error(self.musicData.yTest, yPred)
 		return self.MSE
 
+	def get_RMSE(self):
+		if self.MSE==None:
+			self.get_MSE_score()
+		self.RMSE=self.MSE**0.5
+		return self.RMSE
+
 	def get_MAE_score(self):
 		yPred = self.model.predict(self.musicData.xTest)
 		self.MAE=mean_absolute_error(self.musicData.yTest, yPred)
 		return self.MAE
 
-	def grid_search(self, params):
-		self.model= GridSearchCV(estimator = self.model,param_grid=params, n_jobs = -1, verbose = 2)
+	def get_MAPE(self):
+		yPred = self.model.predict(self.musicData.xTest)
+		self.MAPE = np.mean(np.abs((self.musicData.yTest - yPred) / self.musicData.yTest)) * 100
+		return self.MAPE
+	def get_r2_adjusted(self):
+		nAmostras=len(self.musicData.df.index)
+		nFeatures=len(self.musicData.df.columns)
+		r2=self.get_score()
+		r2Adjusted=1-((1-r2)*(nAmostras-1))/(nAmostras-1-nFeatures)
+		return r2Adjusted
+
+	def grid_search(self, params,nSplits=3):
+		timeSplit = TimeSeriesSplit(n_splits=nSplits)
+		self.model= GridSearchCV(estimator = self.model,param_grid=params, n_jobs = -1, verbose = 3)
 		self.fit()
 		return self.model.best_params_
 
@@ -77,7 +98,7 @@ class randon_forest_regressor(regressor):
 	def __init__(self, musicData, **params):
 		super().__init__(musicData)
 		self.model=RandomForestRegressor(**params)
-		self.fit()
+		#self.fit()
 		self.params=params
 
 class grid_randon_forest_regressor(regressor):
@@ -86,7 +107,7 @@ class grid_randon_forest_regressor(regressor):
 		super().__init__(musicData)
 		self.model=RandomForestRegressor()
 		self.params=params
-		self.model= GridSearchCV(estimator = self.model,param_grid=params, n_jobs = -1, verbose = 2)
+		self.model= GridSearchCV(estimator = self.model,param_grid=params, n_jobs = 5, verbose = 2)
 		self.fit()
 
 
