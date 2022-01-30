@@ -12,6 +12,7 @@ import xgboost as xgb
 from keras.models import Sequential
 from keras.layers import Dense
 import numpy as np
+from sklearn.linear_model import LinearRegression
 
 class regressor():
 
@@ -25,14 +26,24 @@ class regressor():
 	def fit(self):
 		self.model.fit(self.musicData.xTrain, self.musicData.yTrain)
 
-	def get_score(self):
-		yPred = self.model.predict(self.musicData.xTest)
-		self.score=r2_score(self.musicData.yTest, yPred)
+	def get_data(self,isTest=True):
+		if isTest==True:
+			yPred = self.model.predict(self.musicData.xTest)
+			yTrue=self.musicData.yTest
+		else:
+			yPred = self.model.predict(self.musicData.xTrain)
+			yTrue=self.musicData.yTrain
+
+		return yTrue, yPred
+
+	def get_score(self,isTest=True):
+		yTrue, yPred=self.get_data(isTest)
+		self.score=r2_score(yTrue, yPred)
 		return self.score
 
-	def get_MSE_score(self):
-		yPred = self.model.predict(self.musicData.xTest)
-		self.MSE=mean_squared_error(self.musicData.yTest, yPred)
+	def get_MSE_score(self,isTest=True):
+		yTrue, yPred=self.get_data(isTest)
+		self.MSE=mean_squared_error(yTrue, yPred)
 		return self.MSE
 
 	def get_RMSE(self):
@@ -41,19 +52,20 @@ class regressor():
 		self.RMSE=self.MSE**0.5
 		return self.RMSE
 
-	def get_MAE_score(self):
-		yPred = self.model.predict(self.musicData.xTest)
-		self.MAE=mean_absolute_error(self.musicData.yTest, yPred)
+	def get_MAE_score(self,isTest=True):
+		yTrue, yPred=self.get_data(isTest)
+		self.MAE=mean_absolute_error(yTrue, yPred)
 		return self.MAE
 
-	def get_MAPE(self):
-		yPred = self.model.predict(self.musicData.xTest)
-		self.MAPE = np.mean(np.abs((self.musicData.yTest - yPred) / self.musicData.yTest)) * 100
+	def get_MAPE(self,isTest=True):
+		yTrue, yPred=self.get_data(isTest)
+		self.MAPE = np.mean(np.abs((yTrue - yPred) /yTrue)) * 100
 		return self.MAPE
-	def get_r2_adjusted(self):
+
+	def get_r2_adjusted(self,isTest=True):
 		nAmostras=len(self.musicData.df.index)
 		nFeatures=len(self.musicData.df.columns)
-		r2=self.get_score()
+		r2=self.get_score(isTest)
 		r2Adjusted=1-((1-r2)*(nAmostras-1))/(nAmostras-1-nFeatures)
 		return r2Adjusted
 
@@ -74,6 +86,13 @@ class knn_regressor(regressor):
 	def __init__(self, musicData, **params):
 		super().__init__(musicData)
 		self.model=KNeighborsRegressor(**params) #**despactando o dict para mandar os parametros para a funcao interna
+		self.params=params
+
+class linear_regressor(regressor):
+
+	def __init__(self, musicData, **params):
+		super().__init__(musicData)
+		self.model=LinearRegression(**params) #**despactando o dict para mandar os parametros para a funcao interna
 		self.params=params
 
 class tree_regressor(regressor):

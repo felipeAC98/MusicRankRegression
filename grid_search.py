@@ -20,6 +20,13 @@ except:
 	print(' release_time nao encontrada: '+str(traceback.format_exc()))
 
 musicData.train_test_split(targetFeatureName="popularity")
+#======= Linear Regressor #=======
+linear_grid_params={
+	'fit_intercept':[False,True]
+}
+linear_regressor=classes.regressor.linear_regressor(musicData)
+print(linear_regressor.grid_search(linear_grid_params))
+print(linear_regressor.get_grid_best_score())
 
 #======= KNN #=======
 
@@ -48,7 +55,7 @@ tree_regressor=classes.regressor.tree_regressor(musicData)
 print(tree_regressor.grid_search(tree_grid_params))
 print(tree_regressor.get_grid_best_score())
 '''
-#'''
+'''
 #Random forest
 rf_grid_params={
 	'criterion':["squared_error"],
