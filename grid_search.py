@@ -19,7 +19,9 @@ try:
 except:
 	print(' release_time nao encontrada: '+str(traceback.format_exc()))
 
+musicData.normalize()
 musicData.train_test_split(targetFeatureName="popularity")
+
 #======= Linear Regressor #=======
 linear_grid_params={
 	'fit_intercept':[False,True]

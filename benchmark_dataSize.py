@@ -5,6 +5,7 @@ import traceback
 import pandas as pd
 import numpy as np
 import copy
+import time
 
 musicData=get_prep_mus_data()
 
@@ -18,6 +19,8 @@ try:
 
 except:
 	print(' release_time nao encontrada: '+str(traceback.format_exc()))
+
+musicData.normalize()
 
 dropPercents=[0,0.1,0.2,0.5,0.7,0.9] #*10
 
@@ -35,43 +38,113 @@ for dropPercent in dropPercents:
 
 	musicDataTemp.train_test_split(targetFeatureName="popularity")
 
-	#KNN regressor score
-	knn_regressor=classes.regressor.knn_regressor(musicDataTemp,n_neighbors=15)
+	inicio = time.time()
+
+	#======= KNN #=======
+
+	#'''
+	knn_regressor=classes.regressor.knn_regressor(musicDataTemp,n_neighbors=200)
+	knn_regressor.fit()
 	print("KNN score: "+str(knn_regressor.get_score()))
-	print("knn_regressor MSE score: "+str(knn_regressor.get_MSE_score()))	
-	print("knn_regressor MAE score: "+str(knn_regressor.get_MAEP_score()))	
+	print("MSE score: "+str(knn_regressor.get_MSE_score()))	
+	print("MAE score: "+str(knn_regressor.get_MAE_score()))	
+	print("R2 ajustado: "+str(knn_regressor.get_r2_adjusted()))	
+	print("RMSE: "+str(knn_regressor.get_RMSE()))	
+	print("MAPE: "+str(knn_regressor.get_MAPE()))	
 
+	print("KNN score (train): "+str(knn_regressor.get_score(isTest=False)))
+	print("MSE score (train): "+str(knn_regressor.get_MSE_score(isTest=False)))	
+	print("MAE score (train): "+str(knn_regressor.get_MAE_score(isTest=False)))	
+	print("R2 ajustado (train): "+str(knn_regressor.get_r2_adjusted(isTest=False)))	
+	print("RMSE (train): "+str(knn_regressor.get_RMSE()))	
+	print("MAPE (train): "+str(knn_regressor.get_MAPE(isTest=False)))	
+
+	#'''
+
+	#'''
 	#Tree score
-	tree_regressor=classes.regressor.tree_regressor(musicDataTemp,min_impurity_decrease=0.1)
+	tree_regressor=classes.regressor.tree_regressor(musicDataTemp,min_impurity_decrease=0.2)
+	tree_regressor.fit()
 	print("tree_regressor score: "+str(tree_regressor.get_score()))	
-	print("tree_regressor MSE score: "+str(tree_regressor.get_MSE_score()))	
-	print("tree_regressor MAE score: "+str(tree_regressor.get_MAEP_score()))	
+	print("MSE score: "+str(tree_regressor.get_MSE_score()))	
+	print("MAE score: "+str(tree_regressor.get_MAE_score()))	
+	print("R2 ajustado: "+str(tree_regressor.get_r2_adjusted()))	
+	print("RMSE: "+str(tree_regressor.get_RMSE()))	
+	print("MAPE: "+str(tree_regressor.get_MAPE()))	
 
+	print("tree_regressor score (train): "+str(tree_regressor.get_score(isTest=False)))	
+	print("MSE score (train): "+str(tree_regressor.get_MSE_score(isTest=False)))	
+	print("MAE score (train): "+str(tree_regressor.get_MAE_score(isTest=False)))	
+	print("R2 ajustado (train): "+str(tree_regressor.get_r2_adjusted(isTest=False)))	
+	print("RMSE (train): "+str(tree_regressor.get_RMSE()))	
+	print("MAPE (train): "+str(tree_regressor.get_MAPE(isTest=False)))
 
+	#'''
+	#'''
 	#Random forest score
-	randon_forest_regressor=classes.regressor.randon_forest_regressor(musicDataTemp,min_impurity_decrease=0.001)
+	randon_forest_regressor=classes.regressor.randon_forest_regressor(musicDataTemp,min_impurity_decrease=0.001,n_estimators=400)
+	randon_forest_regressor.fit()
 	print("Random Forest score: "+str(randon_forest_regressor.get_score()))	
+	print("MMSE score: "+str(randon_forest_regressor.get_MSE_score()))	
+	print("MAE score: "+str(randon_forest_regressor.get_MAE_score()))
+	print("R2 ajustado: "+str(randon_forest_regressor.get_r2_adjusted()))	
+	print("RMSE: "+str(randon_forest_regressor.get_RMSE()))	
+	print("MAPE: "+str(randon_forest_regressor.get_MAPE()))	
 
+	print("Random Forest score (train): "+str(randon_forest_regressor.get_score(isTest=False)))	
+	print("MMSE score (train): "+str(randon_forest_regressor.get_MSE_score(isTest=False)))	
+	print("MAE score (train): "+str(randon_forest_regressor.get_MAE_score(isTest=False)))
+	print("R2 ajustado (train): "+str(randon_forest_regressor.get_r2_adjusted(isTest=False)))	
+	print("RMSE (train): "+str(randon_forest_regressor.get_RMSE()))	
+	print("MAPE (train): "+str(randon_forest_regressor.get_MAPE(isTest=False)))	
+	#'''
+
+	'''
 	#MLP score
 	mlp_regressor=classes.regressor.mlp_regressor(musicDataTemp,random_state=1, max_iter=500,activation='relu',solver='adam',hidden_layer_sizes=(50,50,50,50,))
-	print("MLP score: "+str(mlp_regressor.get_score()))	
+	print("MLP score: "+str(mlp_regressor.get_score()))	'''
 
 	#Keras score
-	keras_sequential_regressor=classes.regressor.keras_sequential_regressor(musicDataTemp)
-	print("Keras score: "+str(keras_sequential_regressor.get_score()))	
+	#keras_sequential_regressor=classes.regressor.keras_sequential_regressor(musicDataTemp)
+	#print("Keras score: "+str(keras_sequential_regressor.get_score()))	
 
+	'''
 	#AdaBoost score
 	adaboost_regressor=classes.regressor.adaboost_regressor(musicDataTemp,n_estimators=100)
 	print("AdaBoost score: "+str(adaboost_regressor.get_score()))	
 	print("AdaBoost MSE score: "+str(adaboost_regressor.get_MSE_score()))	
 	print("AdaBoost MAE score: "+str(adaboost_regressor.get_MAEP_score()))		
+	'''
 
 	#Xgboost score
+	'''
 	xgboost_regressor=classes.regressor.xgboost_regressor(musicDataTemp,learning_rate=0.1,
-			max_depth= 3,
-			subsample=0.8,
-			n_jobs=-1,
+			max_depth= 15,
+			subsample=1,
+			n_jobs=4,
 			random_state=42)
+	xgboost_regressor.fit()
 	print("XGboost score: "+str(xgboost_regressor.get_score()))	
+	print("MMSE score: "+str(xgboost_regressor.get_MSE_score()))	
+	print("MAE score: "+str(xgboost_regressor.get_MAE_score()))
+	print("R2 ajustado: "+str(xgboost_regressor.get_r2_adjusted()))	
+	print("RMSE: "+str(xgboost_regressor.get_RMSE()))	
+	print("MAPE: "+str(xgboost_regressor.get_MAPE()))	
+	#'''
+	'''
+	xgboostPrams={
+		'learning_rate':[0.001,0.01,0.1],
+		'max_depth':[5,10,15],
+		'subsample':[0.8,1]
+	}
+	
+	xgboost_regressor=classes.regressor.grid_xgboost_regressor(musicDataTemp,xgboostPrams)
+	print("XGboost best params: "+str(xgboost_regressor.get_best_param()))	
+	print("XGboost score: "+str(xgboost_regressor.get_score()))		
+	#XGboost best params: {'learning_rate': 0.1, 'max_depth': 15, 'subsample': 0.8}
+	'''
+
+	fim = time.time()
+	print("Tempo execucao:"+str(fim - inicio))
 
 	break
