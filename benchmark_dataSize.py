@@ -40,6 +40,23 @@ for dropPercent in dropPercents:
 
 	inicio = time.time()
 
+	#======= Linear Regressor #=======
+	linear_regressor=classes.regressor.linear_regressor(musicDataTemp,fit_intercept=False)
+	linear_regressor.fit()
+	print("Linear score: "+str(linear_regressor.get_score()))
+	print("MSE score: "+str(linear_regressor.get_MSE_score()))	
+	print("MAE score: "+str(linear_regressor.get_MAE_score()))	
+	print("R2 ajustado: "+str(linear_regressor.get_r2_adjusted()))	
+	print("RMSE: "+str(linear_regressor.get_RMSE()))	
+	print("MAPE: "+str(linear_regressor.get_MAPE()))	
+
+	print("Linear score (train): "+str(linear_regressor.get_score(isTest=False)))
+	print("MSE score (train): "+str(linear_regressor.get_MSE_score(isTest=False)))	
+	print("MAE score (train): "+str(linear_regressor.get_MAE_score(isTest=False)))	
+	print("R2 ajustado (train): "+str(linear_regressor.get_r2_adjusted(isTest=False)))	
+	print("RMSE (train): "+str(linear_regressor.get_RMSE()))	
+	print("MAPE (train): "+str(linear_regressor.get_MAPE(isTest=False)))	
+
 	#======= KNN #=======
 
 	#'''
@@ -147,4 +164,4 @@ for dropPercent in dropPercents:
 	fim = time.time()
 	print("Tempo execucao:"+str(fim - inicio))
 
-	break
+	#break
