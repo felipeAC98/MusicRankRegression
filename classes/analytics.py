@@ -3,35 +3,47 @@ import matplotlib.pyplot as plt
 
 class shap_values():
 
-	def __init__(self,regressor):
+	def __init__(self,regressor,dataPercent=1,preShapConfig=True):
 		self.regressor=regressor
 
+		if preShapConfig==True:
+			self.explainer=shap.Explainer(self.regressor.get_model())
+			self.dataPercent=dataPercent
+			self.nSamples=int(len(self.regressor.musicData.df.index)*self.dataPercent)
+			self.shapValues=self.explainer.shap_values(self.regressor.musicData.xTest)[:self.nSamples]
+
 	def tree_explainer(self,name):
-		shap_values = shap.TreeExplainer(self.regressor.model).shap_values(self.regressor.musicData.xTrain)
+		shap_values = shap.TreeExplainer(self.regressor.model).shap_values(self.regressor.musicData.xTest)[:self.nSamples]
 		#shap.summary_plot(shap_values, self.regressor.musicData.xTrain, plot_type="bar")		
 		f = plt.figure()
-		shap.summary_plot(shap_values , self.regressor.musicData.xTrain, plot_type="bar")
+		shap.summary_plot(shap_values , self.regressor.musicData.xTest, plot_type="bar")
 		f.savefig("newPlots/"+str(name)+"-tree_explainer.png", bbox_inches='tight', dpi=600)
 
 	def explainer(self,name):
-		shap_values = shap.Explainer(self.regressor.get_model()).shap_values(self.regressor.musicData.xTrain)
 		f = plt.figure()
-		shap.summary_plot(shap_values , self.regressor.musicData.xTrain, plot_type="bar")
+		shap.summary_plot(self.shapValues , self.regressor.musicData.xTest, plot_type="bar")
 		f.savefig("newPlots/"+str(name)+"-explainer.png", bbox_inches='tight', dpi=600)
 
 	def explainer_default(self,name):
-		shap_values = shap.Explainer(self.regressor.get_model()).shap_values(self.regressor.musicData.xTrain)
 		f = plt.figure()
-		shap.summary_plot(shap_values , self.regressor.musicData.xTrain)
+		shap.summary_plot(self.shapValues , self.regressor.musicData.xTest)
 		f.savefig("newPlots/"+str(name)+"-explainer_default.png", bbox_inches='tight', dpi=600)
 
-	def decision_plot(self,name,nSamples=100):
-		explainer = shap.TreeExplainer(self.regressor.get_model())
-		shapValues =explainer.shap_values(self.regressor.musicData.xTest)
+	def decision_plot(self,name,nSamples=400):
 
 		f = plt.figure()
 		#features = musicData.df.iloc[select]
 		#featuresDisplay = X_display.loc[nSamples]
-		shap.decision_plot(explainer.expected_value[:nSamples], shapValues[:nSamples], self.regressor.musicData.xTest,ignore_warnings=True)
+		shap.decision_plot(self.explainer.expected_value[:nSamples], self.shapValues[:nSamples], self.regressor.musicData.xTest,ignore_warnings=True,title="")
 		#shap.summary_plot(shapValues , self.regressor.musicData.xTrain)
 		f.savefig("newPlots/"+str(name)+"-decision_plot.png", bbox_inches='tight', dpi=600)
+
+	def force_plot(self,name,featureN):
+
+		f = plt.figure()
+		explainer = shap.TreeExplainer(self.regressor.get_model())
+		shap_values = explainer.shap_values(self.regressor.musicData.xTest)
+		print("Expected value: "+str(explainer.expected_value))
+		shap.force_plot(explainer.expected_value, shap_values[featureN:featureN+1,:], self.regressor.musicData.xTest.iloc[featureN:featureN+1,:], matplotlib=True, show=True)
+		plt.savefig("newPlots/"+str(name)+"-force_plot.png")
+		plt.close()

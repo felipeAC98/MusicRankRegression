@@ -22,27 +22,36 @@ except:
 	print(' release_time nao encontrada: '+str(traceback.format_exc()))
 
 #removendo algumas amostras para deixar o treinamento inicial mais rapido
-#nIndexsToDrop=int(len(musicData.df.index)*0.9)
+nIndexsToDrop=int(len(musicData.df.index)*0.5)
 
-#indexsToDrop = np.random.choice(musicData.df.index, nIndexsToDrop, replace=False)
-#musicData.df = musicData.df.drop(indexsToDrop)	
+indexsToDrop = np.random.choice(musicData.df.index, nIndexsToDrop, replace=False)
+musicData.df = musicData.df.drop(indexsToDrop)	
 
 musicData.train_test_split(targetFeatureName="popularity")
 
 #Tree score
-tree_regressor=classes.regressor.tree_regressor(musicData,min_impurity_decrease=0.2)
+'''
+tree_regressor=classes.regressor.tree_regressor(musicData,min_impurity_decrease=1)
 tree_regressor.fit()
-shapValues=shap_values(tree_regressor)
-#shapValues.tree_explainer("tree_regressor")
-#shapValues.explainer("tree_regressor")
-#shapValues.explainer_default("tree_regressor")
-#shapValues.decision_plot("tree_regressor")
+shap=shap_values(tree_regressor)
+shap.tree_explainer("tree_regressor-xTest-example")
+#shap.explainer("tree_regressor-example")
+shap.explainer_default("tree_regressor-xTest-example")
+shap.decision_plot("tree_regressor-xTest-example")
+#'''
 
 #Random forest score
+'''
 randon_forest_regressor=classes.regressor.randon_forest_regressor(musicData,min_impurity_decrease=0.001,n_estimators=400)
 randon_forest_regressor.fit()
-shapValues=shap_values(randon_forest_regressor)
-shapValues.tree_explainer("randon_forest")
-shapValues.explainer("randon_forest")
-shapValues.explainer("randon_forest")
-shapValues.decision_plot("randon_forest")
+shap=shap_values(randon_forest_regressor)
+#shap.explainer_default("randon_forest-xTest")
+shap.decision_plot("randon_forest-xTest")
+#shap.tree_explainer("randon_forest-xTest")
+'''
+
+#Force plot
+tree_regressor=classes.regressor.tree_regressor(musicData,min_impurity_decrease=1)
+tree_regressor.fit()
+shap=shap_values(tree_regressor,preShapConfig=False)
+shap.force_plot("tree_regressor-test",2)
