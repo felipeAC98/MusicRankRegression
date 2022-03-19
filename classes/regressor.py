@@ -22,6 +22,7 @@ class regressor():
 		self.score=None
 		self.MSE=None
 		self.RMSE=None
+		self.algorithm="default_regressor"
 
 	def fit(self):
 		self.model.fit(self.musicData.xTrain, self.musicData.yTrain)
@@ -36,7 +37,14 @@ class regressor():
 
 		return yTrue, yPred
 
-	def get_score(self,isTest=True):
+	def get_scores(self,isTest=True):
+		print(str(self.algorithm)+": R2 ajustado: "+str(self.get_r2_adjusted(isTest)))	
+		print(str(self.algorithm)+": MMSE score: "+str(self.get_MSE_score(isTest)))	
+		print(str(self.algorithm)+": MAE score: "+str(self.get_MAE_score(isTest)))
+		print(str(self.algorithm)+": RMSE: "+str(self.get_RMSE()))	
+		#print(str(self.algorithm)+": MAPE: "+str(self.get_MAPE()))	
+
+	def get_r2_score(self,isTest=True):
 		yTrue, yPred=self.get_data(isTest)
 		self.score=r2_score(yTrue, yPred)
 		return self.score
@@ -47,6 +55,7 @@ class regressor():
 		return self.MSE
 
 	def get_RMSE(self):
+		#get RMSE eh baseado no MSE, logo se o MSE foi calculado sobre os dados Y entao o RMSE tambem sera
 		if self.MSE==None:
 			self.get_MSE_score()
 		self.RMSE=self.MSE**0.5
@@ -65,7 +74,7 @@ class regressor():
 	def get_r2_adjusted(self,isTest=True):
 		nAmostras=len(self.musicData.df.index)
 		nFeatures=len(self.musicData.df.columns)
-		r2=self.get_score(isTest)
+		r2=self.get_r2_score(isTest)
 		r2Adjusted=1-((1-r2)*(nAmostras-1))/(nAmostras-1-nFeatures)
 		return r2Adjusted
 
@@ -89,6 +98,7 @@ class knn_regressor(regressor):
 		super().__init__(musicData)
 		self.model=KNeighborsRegressor(**params) #**despactando o dict para mandar os parametros para a funcao interna
 		self.params=params
+		self.algorithm="knn_regressor"
 
 class linear_regressor(regressor):
 
@@ -96,6 +106,7 @@ class linear_regressor(regressor):
 		super().__init__(musicData)
 		self.model=LinearRegression(**params) #**despactando o dict para mandar os parametros para a funcao interna
 		self.params=params
+		self.algorithm="linear_regressor"
 
 class tree_regressor(regressor):
 
@@ -103,6 +114,7 @@ class tree_regressor(regressor):
 		super().__init__(musicData)
 		self.model=tree.DecisionTreeRegressor(**params)
 		self.params=params
+		self.algorithm="tree_regressor"
 
 	def plot_tree(self):
 		dot_data = tree.export_graphviz(self.model, out_file=None, 
@@ -121,6 +133,7 @@ class randon_forest_regressor(regressor):
 		self.model=RandomForestRegressor(**params)
 		#self.fit()
 		self.params=params
+		self.algorithm="randon_forest_regressor"
 
 class grid_randon_forest_regressor(regressor):
 
@@ -139,6 +152,7 @@ class randon_extra_tree_regressor(regressor):
         self.model=ExtraTreesRegressor(**params)
        	self.fit()
         self.params=params
+        self.algorithm="randon_extra_tree_regressor"
 
 class xgboost_regressor(regressor):
 
@@ -146,6 +160,7 @@ class xgboost_regressor(regressor):
 		super().__init__(musicData)
 		self.model= xgb.XGBRegressor(**params)
 		self.params=params
+		self.algorithm="xgboost_regressor"
 
 class grid_xgboost_regressor(regressor):
 
@@ -166,6 +181,7 @@ class mlp_regressor(regressor):
 		self.model= MLPRegressor(**params)
 		self.fit()
 		self.params=params
+		self.algorithm="mlp_regressor"
 
 class adaboost_regressor(regressor):
 
@@ -174,6 +190,7 @@ class adaboost_regressor(regressor):
 		self.model= AdaBoostRegressor(**params)
 		self.fit()
 		self.params=params
+		self.algorithm="adaboost_regressor"
 
 class keras_sequential_regressor(regressor):
 
@@ -182,6 +199,7 @@ class keras_sequential_regressor(regressor):
 		self.model= self.keras_sequential_model(**params)
 		self.fit()
 		self.params=params
+		self.algorithm="keras_sequential_regressor"
 
 	def keras_sequential_model(self,**params):
 		inputDim=len(self.musicData.df.columns)
