@@ -24,13 +24,15 @@ dataVisualization=data_visualization(musicData)
 
 #dataVisualization.plot_log_distribution(targetFeature="mus_rank",length=10, height=8)
 
-#dataVisualization.plot_qtd_musics_by_genre(ident="main_genre",fontScale=5,hideXLabels=True, showValues=False)
+dataVisualization.plot_qtd_musics_by_genre(ident="main_genre",fontScale=5,hideXLabels=True, showValues=False)
 
-dataVisualization.plot_qtd_musics_by_genre(ident="main_genre_detailed",length=60, height=40,fontScale=None,hideXLabels=False,showValues=True)
+#dataVisualization.plot_qtd_musics_by_genre(ident="main_genre_detailed",length=60, height=40,fontScale=None,hideXLabels=False,showValues=True)
 
-#dataVisualization.plot_qtd_musics_by(targetFeature="release_date")
+#dataVisualization.plot_qtd_musics_by_release_time(fontScale=5)
 
-#dataVisualization.plot_boxplot(targetFeature1="popularity",targetFeature2="main_genre",length=20, height=30)
+#dataVisualization.plot_distribution(targetFeature="release_time")
+
+#dataVisualization.plot_boxplot(targetFeature1="popularity",targetFeature2="main_genre",length=30, height=45)
 
 #Precisa corrigir, mas eh um plot interessante
 #dataVisualization.plot_boxplot(targetFeature1="release_date",targetFeature2="popularity")
