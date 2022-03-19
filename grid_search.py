@@ -71,14 +71,16 @@ print(randon_forest_regressor.get_grid_best_score())
 #'''
 
 #Xgboost score
-'''
-xgboost_params={
-	'learning_rate':[0.001,0.01,0.1],
-	'max_depth':[5,10,15],
-	'subsample':[0.8,1]
+#'''
+xgboostPrams={
+	'learning_rate':[0.01,0.3,0.5],
+	'max_depth':[6,10,15],
+	'subsample':[0.5,1],
+	'gamma':[0,1,3],
+	'n_jobs':[6]
 }
 
-xgboost_regressor=classes.regressor.xgboost_regressor(musicDataTemp)
-print(xgboost_regressor.grid_search(xgboost_params))
-print(xgboost_regressor.get_grid_best_score())
-'''
+xgboost_regressor=classes.regressor.grid_xgboost_regressor(musicData,xgboostPrams)
+print(xgboost_regressor.get_best_param())
+#'''
+#{'gamma': 0, 'learning_rate': 0.3, 'max_depth': 10, 'n_jobs': 4, 'subsample': 1}
