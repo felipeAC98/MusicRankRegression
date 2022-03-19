@@ -10,7 +10,7 @@ import time
 musicData=get_prep_mus_data()
 
 for column in musicData.df.columns:
-	if column not in ['popularity','release_date','music_lang','totalFollowrs','danceability','loudness','liveness']:
+	if column not in ['popularity','release_date','music_lang','totalFollowers','danceability','loudness','liveness']:
 		musicData.df.drop(columns=[column],inplace=True)
 
 #Aplicando one hot enconding
