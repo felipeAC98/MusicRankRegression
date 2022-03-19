@@ -3,6 +3,7 @@ import pandas as pd
 import transform
 from sklearn.model_selection import train_test_split
 import traceback
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 class music_data_entity():
 
@@ -32,6 +33,13 @@ class music_data_entity():
 		self.df.drop(columns=[targetFeatureName],inplace=True)
 		
 		self.xTrain, self.xTest, self.yTrain,self.yTest = train_test_split(self.df, targetDF, test_size=0.2)
+
+	def normalize(self,targetFeatureName="popularity"):
+		#Normalizando dados
+		for column in self.df.columns:
+			scaler = MinMaxScaler()
+			if str(column) != (targetFeatureName):
+				self.df[[column]] = scaler.fit_transform(self.df[[column]])
 
 def get_prep_mus_data():
 

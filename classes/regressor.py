@@ -18,14 +18,14 @@ class regressor():
 
 	def __init__(self,musicData):
 		self.musicData=musicData
-		self.model=None
+		#self.model=None
 		self.score=None
 		self.MSE=None
 		self.RMSE=None
 
 	def fit(self):
 		self.model.fit(self.musicData.xTrain, self.musicData.yTrain)
-
+		
 	def get_data(self,isTest=True):
 		if isTest==True:
 			yPred = self.model.predict(self.musicData.xTest)
@@ -81,6 +81,8 @@ class regressor():
 	def get_grid_best_score(self):
 		return self.model.best_score_
 
+	def get_model(self):
+		return self.model
 class knn_regressor(regressor):
 
 	def __init__(self, musicData, **params):
@@ -187,13 +189,13 @@ class keras_sequential_regressor(regressor):
 
 		model=Sequential()
 		model.add(Dense(firstLayer, input_dim=inputDim, kernel_initializer='normal', activation='relu'))
-		model.add(Dense(firstLayer*2,  kernel_initializer='normal', activation='relu'))
+		#model.add(Dense(firstLayer*2,  kernel_initializer='normal', activation='relu'))
 		model.add(Dense(firstLayer*4,  kernel_initializer='normal', activation='relu'))
-		model.add(Dense(firstLayer, kernel_initializer='normal', activation='relu'))
+		#model.add(Dense(firstLayer, kernel_initializer='normal', activation='relu'))
 		model.add(Dense(firstLayer, kernel_initializer='normal', activation='relu'))
 		#model.add(Dense(firstLayer, kernel_initializer='normal', activation='relu'))
-		model.add(Dense(int(firstLayer/2), kernel_initializer='normal', activation='relu'))
-		model.add(Dense(int(firstLayer/8), kernel_initializer='normal', activation='relu'))
+		#model.add(Dense(int(firstLayer/2), kernel_initializer='normal', activation='relu'))
+		#model.add(Dense(int(firstLayer/8), kernel_initializer='normal', activation='relu'))
 		model.add(Dense(1, kernel_initializer='normal'))
 		model.compile(loss='mean_squared_error', optimizer='Adamax')
 

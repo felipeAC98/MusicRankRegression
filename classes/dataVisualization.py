@@ -58,12 +58,12 @@ class data_visualization():
 		if fontScale!=None:
 			sns.set(font_scale = fontScale)
 
-		countplot=sns.countplot(x = targetFeature, data =self.musicData.df)
+		countplot=sns.countplot(x = targetFeature, data =self.musicData.df,order = self.musicData.df[ident].value_counts().index)
 
 		if hideXLabels:
 			countplot.set(xticklabels=[])
 
-		#self.plt.xlabel(targetFeature)
+		self.plt.xlabel("Gênero musical")
 		self.plt.ylabel("Quantidade de musicas")
 
 		if showValues==True:
@@ -103,8 +103,10 @@ class data_visualization():
 		#f, axes = plt.subplots(2, 2, figsize=(15, 15), sharex=False)
 		#sns.despine(left=True)
 		self.set_figure_size(length=length, height=height)
-		sns.set(font_scale = 3)
+		sns.set(font_scale = 2)
 		sns.boxplot(targetFeature1, targetFeature2, data = self.musicData.df)
+		self.plt.xlabel("Popularidade")
+		self.plt.ylabel("Gênero musical")
 		self.save_figure(str(targetFeature1)+'_by_'+str(targetFeature2),"plot_boxplot")
 
 	def plot_corr_matrix(self):

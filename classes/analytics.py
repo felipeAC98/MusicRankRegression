@@ -38,12 +38,15 @@ class shap_values():
 		#shap.summary_plot(shapValues , self.regressor.musicData.xTrain)
 		f.savefig("newPlots/"+str(name)+"-decision_plot.png", bbox_inches='tight', dpi=600)
 
-	def force_plot(self,name,featureN):
+	def force_plot(self,name,featureN,maxPlots=30):
 
 		f = plt.figure()
 		explainer = shap.TreeExplainer(self.regressor.get_model())
 		shap_values = explainer.shap_values(self.regressor.musicData.xTest)
 		print("Expected value: "+str(explainer.expected_value))
-		shap.force_plot(explainer.expected_value, shap_values[featureN:featureN+1,:], self.regressor.musicData.xTest.iloc[featureN:featureN+1,:], matplotlib=True, show=True)
-		plt.savefig("newPlots/"+str(name)+"-force_plot.png")
+
+		for value in range(featureN,maxPlots):
+			shap.force_plot(explainer.expected_value, shap_values[value,:], self.regressor.musicData.xTest.iloc[value,:], matplotlib=True, show=True)
+			plt.savefig("newPlots/forcePlot/"+str(name)+"-force_plot"+str(value)+".png")
+
 		plt.close()
