@@ -18,6 +18,7 @@ def main():
 	parser.add_argument('--dropDataTest')				#Habilita ou nao o teste de drop dos dados do dataset para construcao doss modelos
 	parser.add_argument('--set')						#Define se ira utilizar o conjunto de treino ou de testes para o teste do modelo
 	parser.add_argument('--dropParams')					#Define se ira utilizar somente os parametros principais definidos manualmente 
+	parser.add_argument('--dropFollowers')
 
 	args = parser.parse_args()
 
@@ -29,7 +30,7 @@ def main():
 
 	musicData=get_prep_mus_data()
 
-	if str(args.dropParams).lower() == "True":
+	if str(args.dropParams).lower() == "true":
 		#Removendo parametros que nao estao entre estes desta lista
 		for column in musicData.df.columns:
 			if column not in ['popularity','release_date','music_lang','totalFollowers','danceability','loudness','liveness']:
@@ -38,6 +39,9 @@ def main():
 	else:
 		#Aplicando one hot enconding
 		musicData.df = transform.useOneHotEncoder(musicData.df, 'main_genre','genre-')
+
+	if str(args.dropFollowers).lower() == "true":
+		musicData.df.drop(columns=['totalFollowers'],inplace=True)
 
 	musicData.df = transform.useOneHotEncoder(musicData.df, 'music_lang')
 
