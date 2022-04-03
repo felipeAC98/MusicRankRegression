@@ -98,15 +98,15 @@ class data_visualization():
 		fig = px.line_polar(self.musicData.df, r=targetFeature, theta=targetFeature, line_close=True)
 		fig.write_image("newPlots/"+str(targetFeature)+"_plot_polar_graph.jpeg")
 
-	def plot_boxplot(self,targetFeature1,targetFeature2,length=20, height=30):
+	def plot_boxplot(self,targetFeature1,targetFeature2,length=20, height=30,xLabel="Popularidade",yLabel="Gênero musical"):
 
 		#f, axes = plt.subplots(2, 2, figsize=(15, 15), sharex=False)
 		#sns.despine(left=True)
 		self.set_figure_size(length=length, height=height)
 		sns.set(font_scale = 2)
-		sns.boxplot(targetFeature1, targetFeature2, data = self.musicData.df)
-		self.plt.xlabel("Popularidade")
-		self.plt.ylabel("Gênero musical")
+		sns.boxplot(targetFeature1, targetFeature2, data = self.musicData.df,orient="h")
+		self.plt.xlabel(xLabel)
+		self.plt.ylabel(yLabel)
 		self.save_figure(str(targetFeature1)+'_by_'+str(targetFeature2),"plot_boxplot")
 
 	def plot_corr_matrix(self):

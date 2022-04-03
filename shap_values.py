@@ -13,6 +13,7 @@ musicData.df = transform.useOneHotEncoder(musicData.df, 'music_lang')
 #musicData.drop_columns(['music_lang-pt-br'])
 #musicData.drop_columns(['totalFollowers'])
 print(musicData.df.head())
+musicData.df.drop(columns=['artPopularity'],inplace=True)
 
 #obtendo release time - tempo em meses em que a musica foi lancada
 try:
@@ -34,33 +35,31 @@ musicData.train_test_split(targetFeatureName="popularity")
 tree_regressor=classes.regressor.tree_regressor(musicData,min_impurity_decrease=1)
 tree_regressor.fit()
 shap=shap_values(tree_regressor)
-shap.tree_explainer("tree_regressor-xTest-example")
+shap.tree_explainer("tree_regressor-noTotFolllower")
 #shap.explainer("tree_regressor-example")
-shap.explainer_default("tree_regressor-xTest-example")
-shap.decision_plot("tree_regressor-xTest-example")
+shap.explainer_default("tree_regressor-noTotFolllower")
+shap.decision_plot("tree_regressor-noTotFolllower")
 #'''
 
 #Random forest score
-'''
+#'''
 randon_forest_regressor=classes.regressor.randon_forest_regressor(musicData,min_impurity_decrease=0.001,n_estimators=400)
 randon_forest_regressor.fit()
 shap=shap_values(randon_forest_regressor)
-#shap.explainer_default("randon_forest-xTest")
-shap.decision_plot("randon_forest-xTest")
-#shap.tree_explainer("randon_forest-xTest")
-'''
-
-#XGBoost
+#shap.explainer_default("randon_forest-noTotFolllower")
+shap.decision_plot("randon_forest-100",nSamples=100)
+#shap.tree_explainer("randon_forest-noTotFolllower")
 #'''
 
-xgboostPrams={
-}
-xgboost_regressor=classes.regressor.xgboost_regressor(musicData)
+#XGBoost
+'''
+
+xgboost_regressor=classes.regressor.xgboost_regressor(musicData,learning_rate=0.3,max_depth=10,subsample=1,n_jobs=4)
 xgboost_regressor.fit()
 shap=shap_values(xgboost_regressor)
-shap.explainer_default("xgboost_regressor-xTest")
-#shap.decision_plot("xgboost_regressor-xTest")
-shap.tree_explainer("xgboost_regressor-xTest")
+shap.explainer_default("xgboost_regressor-noTotFolllower")
+#shap.decision_plot("xgboost_regressor-noTotFolllower")
+shap.tree_explainer("xgboost_regressor-noTotFolllower")
 #'''
 
 '''

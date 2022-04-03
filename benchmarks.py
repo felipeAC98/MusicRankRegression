@@ -18,7 +18,8 @@ def main():
 	parser.add_argument('--dropDataTest')				#Habilita ou nao o teste de drop dos dados do dataset para construcao doss modelos
 	parser.add_argument('--set')						#Define se ira utilizar o conjunto de treino ou de testes para o teste do modelo
 	parser.add_argument('--dropParams')					#Define se ira utilizar somente os parametros principais definidos manualmente 
-	parser.add_argument('--dropFollowers')
+	parser.add_argument('--dropFollowers')				#Define se ira remover a caracteristica de total de seguidores, por padrao ela nao sera removida
+	parser.add_argument('--dropArtPopularity')			#Define se ira remover a caracteristica popularidade do artista, por padrao ela SERA removida
 
 	args = parser.parse_args()
 
@@ -42,6 +43,10 @@ def main():
 
 	if str(args.dropFollowers).lower() == "true":
 		musicData.df.drop(columns=['totalFollowers'],inplace=True)
+
+	#Verificando se o teste do modelo sera sobre os atributos de teste ou treino
+	if str(args.dropArtPopularity).lower() != "false":
+		musicData.df.drop(columns=['artPopularity'],inplace=True)
 
 	musicData.df = transform.useOneHotEncoder(musicData.df, 'music_lang')
 

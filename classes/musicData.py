@@ -64,7 +64,7 @@ def get_prep_mus_data():
 	spotifyData=music_data_entity("spotifyOnlyFeatures",features)
 	spotifyData.read_csv()
 	#Criacao de vetor com as features para remocao
-	featuresParaRemover=['spotify_trackID','spotify_artID','artPopularity']
+	featuresParaRemover=['spotify_trackID','spotify_artID']
 	#Removendo features
 	spotifyData.drop_columns(featuresParaRemover)
 
