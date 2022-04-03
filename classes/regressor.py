@@ -43,6 +43,7 @@ class regressor():
 		print(str(self.algorithm)+": MAE score: "+str(self.get_MAE_score(isTest)))
 		print(str(self.algorithm)+": RMSE: "+str(self.get_RMSE()))	
 		#print(str(self.algorithm)+": MAPE: "+str(self.get_MAPE()))	
+		print("\n")
 
 	def get_r2_score(self,isTest=True):
 		yTrue, yPred=self.get_data(isTest)
@@ -89,6 +90,9 @@ class regressor():
 
 	def get_grid_best_score(self):
 		return self.model.best_score_
+	
+	def get_grid_best_estimator(self):
+		return self.model.best_estimator_
 
 	def get_model(self):
 		return self.model
@@ -173,6 +177,9 @@ class grid_xgboost_regressor(regressor):
 
 	def get_best_param(self):
 		return self.model.best_params_
+
+	def get_best_estimator(self):
+		return self.model.best_estimator_
 
 class mlp_regressor(regressor):
 
