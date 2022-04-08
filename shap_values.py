@@ -8,7 +8,9 @@ musicData=get_prep_mus_data()
 
 print(musicData.df.head())
 #Aplicando one hot enconding
-musicData.df = transform.useOneHotEncoder(musicData.df, 'main_genre','genre-')
+#musicData.df = transform.useOneHotEncoder(musicData.df, 'main_genre','genre-')
+musicData.df.drop(columns=['main_genre'],inplace=True)
+
 musicData.df = transform.useOneHotEncoder(musicData.df, 'music_lang')
 #musicData.drop_columns(['music_lang-pt-br'])
 #musicData.drop_columns(['totalFollowers'])
@@ -23,10 +25,10 @@ except:
 	print(' release_time nao encontrada: '+str(traceback.format_exc()))
 
 #removendo algumas amostras para deixar o treinamento inicial mais rapido
-#nIndexsToDrop=int(len(musicData.df.index)*0.5)
+nIndexsToDrop=int(len(musicData.df.index)*0.5)
 
-#indexsToDrop = np.random.choice(musicData.df.index, nIndexsToDrop, replace=False)
-#musicData.df = musicData.df.drop(indexsToDrop)	
+indexsToDrop = np.random.choice(musicData.df.index, nIndexsToDrop, replace=False)
+musicData.df = musicData.df.drop(indexsToDrop)	
 
 musicData.train_test_split(targetFeatureName="popularity")
 
@@ -34,21 +36,26 @@ musicData.train_test_split(targetFeatureName="popularity")
 '''
 tree_regressor=classes.regressor.tree_regressor(musicData,min_impurity_decrease=1)
 tree_regressor.fit()
-shap=shap_values(tree_regressor)
-shap.tree_explainer("tree_regressor-noTotFolllower")
+shap=shap_values(tree_regressor,preShapConfig=False)
+#shap.tree_explainer("tree_regressor-noTotFolllower")
 #shap.explainer("tree_regressor-example")
-shap.explainer_default("tree_regressor-noTotFolllower")
-shap.decision_plot("tree_regressor-noTotFolllower")
+#shap.explainer_default("tree_regressor-noTotFolllower")
+#shap.decision_plot("tree_regressor-noTotFolllower")
+#shap.bar_plot("tree_regressor-testBar")
+shap.music_decision_plot("tree_regressor-testMusDec",musID=0)
+
 #'''
 
 #Random forest score
 #'''
 randon_forest_regressor=classes.regressor.randon_forest_regressor(musicData,min_impurity_decrease=0.001,n_estimators=400)
 randon_forest_regressor.fit()
-shap=shap_values(randon_forest_regressor)
+shap=shap_values(randon_forest_regressor,preShapConfig=False)
 #shap.explainer_default("randon_forest-noTotFolllower")
-shap.decision_plot("randon_forest-100",nSamples=100)
+#shap.decision_plot("randon_forest-100",nSamples=100)
 #shap.tree_explainer("randon_forest-noTotFolllower")
+#shap.bar_plot("randon_forest-testBar")
+shap.music_decision_plot("randon_forest-testMusDec")
 #'''
 
 #XGBoost
