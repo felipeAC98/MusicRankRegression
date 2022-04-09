@@ -55,7 +55,7 @@ def get_prep_mus_data():
 	musData.read_csv()
 	
 	#Criacao de vetor com as features para remocao
-	featuresParaRemover=['position','music_id','art_id','art_name','music_name','related_genre','art_rank4Mula','spotify_trackID','spotifyAlbum_id','spotifyArt_id','art_rank','mus_rank','period','musicnn_tags']
+	featuresParaRemover=['position','music_id','art_id','art_name','related_genre','art_rank4Mula','spotify_trackID','spotifyAlbum_id','spotifyArt_id','art_rank','mus_rank','period','musicnn_tags']
 	#Removendo features
 	musData.drop_columns(featuresParaRemover)
 

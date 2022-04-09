@@ -4,37 +4,37 @@ from classes.analytics import shap_values
 import transform
 import numpy as np
 
-def get_music_ID(musicData,musicName="The Bliss"):
+def get_music_ID_by_name(musicData,musicName="Bang"):
 	musicID = musicData.df.index[musicData.df['music_name'] == musicName].tolist()[0]
-	print(musicID)
-
-	print(musicData.xTrain[musicData.xTrain['music_name'] == musicName])
-
-	if len(musicData.xTrain.index[musicData.xTrain['music_name'] == musicName].tolist()) < 1:
-		#removendo a linha das respostas das amostras de treino 
-
-		#obtendo a posicao da musica no banco de treino
-		musicIDTest = musicData.xTrain.index[musicData.xTrain['music_name'] == musicName].tolist()[0]
-		newLineTest = musicData.yTrain.iloc[musicIDTest]
-		musicData.yTest.append(newLineTest)
-
-		#removendo a linha das amostras de treino 
-		newLineTest=musicData.xTrain[musicData.xTrain['music_name'] == musicName] 
-		musicData.xTest.append(newLineTest)
-
-	else:
-		print("musica ja esta no banco de teste:" +str(musicData.xTest[musicData.xTest['music_name'] == musicName]))
-
-	print("musica removida do treino:" +str(musicData.xTrain[musicData.xTrain['music_name'] == musicName]))
 
 	#Removendo atributo dos dfs
-	musicData.df.drop(columns=['music_name'],inplace=True)
-	musicData.yTest.drop(columns=['music_name'],inplace=True)
-	musicData.yTrain.drop(columns=['music_name'],inplace=True)
-	musicData.xTrain.drop(columns=['music_name'],inplace=True)
-	musicData.xTest.drop(columns=['music_name'],inplace=True)
+	drop_colums(musicData)
 
 	return musicID
+
+def get_music_ID_by_popularity(musicData,popularity=50):
+
+	musicID=0
+	for key in musicData.yTest:
+		if key>popularity:
+			break
+
+		musicID+=1
+
+	musicaSelecionada=musicData.xTest.iloc[musicID]
+	print("Musica selecionada: " +str(musicaSelecionada["music_name"]))
+	drop_colums(musicData)
+	return musicID, musicaSelecionada["music_name"]
+
+def drop_colums(musicData,column='music_name'):
+	#Removendo atributo dos dfs
+	musicData.df.drop(columns=[column],inplace=True)
+	musicData.yTest.drop(columns=[column],inplace=True)
+	musicData.yTrain.drop(columns=[column],inplace=True)
+	musicData.xTrain.drop(columns=[column],inplace=True)
+	musicData.xTest.drop(columns=[column],inplace=True)
+
+
 
 musicData=get_prep_mus_data()
 
@@ -63,7 +63,8 @@ except:
 #musicData.df = musicData.df.drop(indexsToDrop)	
 
 musicData.train_test_split(targetFeatureName="popularity")
-musicID=get_music_ID(musicData,musicName="The Bliss")
+#musicID=get_music_ID(musicData,musicName="Bang")
+musicID, nomeMusica=get_music_ID_by_popularity(musicData,popularity=50)
 
 #Tree score
 '''
@@ -88,7 +89,7 @@ shap=shap_values(randon_forest_regressor,preShapConfig=False)
 #shap.decision_plot("randon_forest-100",nSamples=100)
 #shap.tree_explainer("randon_forest-noTotFolllower")
 #shap.bar_plot("randon_forest-testBar")
-shap.music_decision_plot("randon_forest-testMusDec",musID=musicID)
+shap.music_decision_plot("randon_forest-"+str(nomeMusica),musID=musicID)
 #'''
 
 #XGBoost
