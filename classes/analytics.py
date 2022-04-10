@@ -13,13 +13,13 @@ class shap_values():
 
 	def set_explainer_config(self,dataPercent=1,musID=None):
 		self.explainer=shap.Explainer(self.regressor.get_model())
-		print("set_explainer_config")
 		if musID==None:
 			self.nSamples=int(len(self.regressor.musicData.df.index)*dataPercent)
-			self.shapValues=self.explainer.shap_values(self.regressor.musicData.xTest)[:self.nSamples]
+			self.shapValues=self.explainer.shap_values(self.regressor.musicData.df)[:self.nSamples]
 		else:
 			self.shapValues=self.explainer.shap_values(self.regressor.musicData.xTest.iloc[musID])
 
+		self.preShapConfig=True
 	def tree_explainer(self,name):
 		shap_values = shap.TreeExplainer(self.regressor.model).shap_values(self.regressor.musicData.xTest)[:self.nSamples]
 		#shap.summary_plot(shap_values, self.regressor.musicData.xTrain, plot_type="bar")		
@@ -40,7 +40,7 @@ class shap_values():
 			self.set_explainer_config()
 
 		f = plt.figure()
-		shap.summary_plot(self.shapValues , self.regressor.musicData.xTest)
+		shap.summary_plot(self.shapValues , self.regressor.musicData.df)
 		f.savefig("newPlots/"+str(name)+"-explainer_default.png", bbox_inches='tight', dpi=600)
 
 	def decision_plot(self,name,nSamples=400):
@@ -79,6 +79,9 @@ class shap_values():
 		if self.preShapConfig==False or musID!=None:
 			self.set_explainer_config(musID=musID)
 
-		shap.decision_plot(self.explainer.expected_value, self.shapValues, self.regressor.musicData.xTest,ignore_warnings=True,title="")
+		else:
+			self.shapValues=self.explainer.shap_values(self.regressor.musicData.xTest.iloc[musID])
+
+		shap.decision_plot(self.explainer.expected_value, self.shapValues, feature_names=self.regressor.musicData.xTest.columns.tolist(),ignore_warnings=True,title="")
 		#shap.summary_plot(shapValues , self.regressor.musicData.xTrain)
 		f.savefig("newPlots/"+str(name)+"-music_decision.png", bbox_inches='tight', dpi=600)

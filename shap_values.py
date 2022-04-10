@@ -10,10 +10,10 @@ import copy
 def get_music_ID_by_name(musicData,musicName="Bang",dropColumns=True):
 	musicID = musicData.df.index[musicData.df['music_name'] == musicName].tolist()[0]
 
-	#Removendo atributo dos dropFollowers
-	drop_colums(musicData)
+	sample=musicData.df.iloc[musicID]
+	print("Musica selecionada: " +str(sample))
 
-	return musicID
+	return -1 #pela logica do shap values essa funcao nao esta correta, precisa ser corrigida
 
 def get_music_ID_by_popularity(musicData,popularity=50,dropColumns=True):
 
@@ -26,7 +26,7 @@ def get_music_ID_by_popularity(musicData,popularity=50,dropColumns=True):
 
 	sample=musicData.xTest.iloc[musicID]
 	print("Musica selecionada: " +str(sample["music_name"]))
-	drop_colums(musicData)
+	print("infos: " +str(sample))
 	return musicID, sample["music_name"]
 
 def drop_colums(musicData,column='music_name'):
@@ -46,9 +46,10 @@ def main():
 	parser.add_argument('--unDropArtPopularity')		#Define se ira remover a caracteristica popularidade do artista, por padrao ela SERA removida
 	parser.add_argument('--dropMainGenre')				#Define se ira remover a caracteristica popularidade do artista, por padrao ela SERA removida
 	parser.add_argument('--dropDataPercent')			#Divisor que ira os dados, ex: 2, ira remover metade das amostras
-
-	parser.add_argument('--musicName')					#Define se a aplicacao sera realizada sobre somente uma musica - busca pelo nome
-	parser.add_argument('--minMusicPop')					#Define se a aplicacao sera realizada sobre somente uma musica - busca por popularidade maior que a recebida
+	parser.add_argument('--dropParams')					#Define se ira utilizar somente os parametros principais definidos manualmente 
+	
+	parser.add_argument('--musicName')					#LEGADO - nao utilizar #Define se a aplicacao sera realizada sobre somente uma musica - busca pelo nome
+	parser.add_argument('--minMusicPop')				#Define se a aplicacao sera realizada sobre somente uma musica - busca por popularidade maior que a recebida
 	parser.add_argument('--shapPlot')					#Define o tipo de plot que sera realizado pelo SHAP, quando nao definido todos serao plotados
 	parser.add_argument('--namePS')						#Observacao a mais para colocar no nome do arquivo gerado
 
@@ -59,6 +60,7 @@ def main():
 	#deixando todas musicas maiusculas
 	musicData.df['music_name'] = musicData.df['music_name'].str.upper()
 
+	namePS=""
 	if args.namePS != None:
 		namePS=str(args.namePS)
 
@@ -69,8 +71,15 @@ def main():
 	if str(args.unDropArtPopularity).lower() != "true":
 		musicData.df.drop(columns=['artPopularity'],inplace=True)
 
-	if str(args.dropMainGenre).lower() == "true":
+	if str(args.dropParams).lower() == "true":
+		#Removendo parametros que nao estao entre estes desta lista
+		for column in musicData.df.columns:
+			if column not in ['music_name','popularity','release_date','music_lang','totalFollowers','danceability','loudness','liveness']:
+				musicData.df.drop(columns=[column],inplace=True)
+
+	elif str(args.dropMainGenre).lower() == "true":
 		musicData.df.drop(columns=['main_genre'],inplace=True)
+
 	else:
 		#Aplicando one hot enconding
 		musicData.df = transform.useOneHotEncoder(musicData.df, 'main_genre','genre-')
@@ -101,7 +110,7 @@ def main():
 
 	if args.musicName != None:
 		try:
-			musicID=get_music_ID(musicData,musicName=str(args.musicName).upper())
+			musicID=get_music_ID_by_name(musicData,musicName=str(args.musicName).upper())
 			musicName=str(args.musicName)
 
 		except:
@@ -110,6 +119,9 @@ def main():
 
 	elif args.minMusicPop != None:
 		musicID, musicName=get_music_ID_by_popularity(musicData,popularity=int(args.minMusicPop))
+
+	#Removendo atributo dos dropFollowers
+	drop_colums(musicData)
 
 	if str(args.algorithm).lower() in ["tree","rf","xgboost"]:
 
@@ -122,13 +134,14 @@ def main():
 		#======= #Random forest
 		elif str(args.algorithm).lower() == "rf":
 			algName="random_forest"
-			_regressor=classes.regressor.randon_forest_regressor(musicData,min_impurity_decrease=0.001,n_estimators=400)
+			_regressor=classes.regressor.randon_forest_regressor(musicData,min_impurity_decrease=0.001,n_estimators=200)
 
 		else:
 			algName="xgboost"
 			_regressor=classes.regressor.xgboost_regressor(musicData,learning_rate=0.3,max_depth=10,subsample=1,n_jobs=4)
 		
 		_regressor.fit()
+		_regressor.get_scores()
 		shap=shap_values(_regressor,preShapConfig=False)
 
 		if str(args.shapPlot).lower() == "tree_explainer" or  args.shapPlot == None:

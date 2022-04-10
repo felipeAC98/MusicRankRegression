@@ -26,7 +26,10 @@ class regressor():
 
 	def fit(self):
 		self.model.fit(self.musicData.xTrain, self.musicData.yTrain)
-		
+	
+	def predict(self,X):
+		return self.model.predict(X)
+
 	def get_data(self,isTest=True):
 		if isTest==True:
 			yPred = self.model.predict(self.musicData.xTest)
@@ -81,7 +84,7 @@ class regressor():
 
 	def grid_search(self, params,nSplits=3):
 		timeSplit = TimeSeriesSplit(n_splits=nSplits)
-		self.model= GridSearchCV(estimator = self.model,param_grid=params, n_jobs = -1, verbose = 3)
+		self.model= GridSearchCV(estimator = self.model,param_grid=params, n_jobs = 4, verbose = 3)
 		self.fit()
 		return self.model.best_params_
 
