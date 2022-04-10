@@ -10,7 +10,7 @@ import copy
 def get_music_ID_by_name(musicData,musicName="Bang",dropColumns=True):
 	musicID = musicData.df.index[musicData.df['music_name'] == musicName].tolist()[0]
 
-	#Removendo atributo dos dfs
+	#Removendo atributo dos dropFollowers
 	drop_colums(musicData)
 
 	return musicID
@@ -24,10 +24,10 @@ def get_music_ID_by_popularity(musicData,popularity=50,dropColumns=True):
 
 		musicID+=1
 
-	musicaSelecionada=musicData.xTest.iloc[musicID]
-	print("Musica selecionada: " +str(musicaSelecionada["music_name"]))
+	sample=musicData.xTest.iloc[musicID]
+	print("Musica selecionada: " +str(sample["music_name"]))
 	drop_colums(musicData)
-	return musicID, musicaSelecionada["music_name"]
+	return musicID, sample["music_name"]
 
 def drop_colums(musicData,column='music_name'):
 	#Removendo atributo dos dfs
@@ -117,24 +117,19 @@ def main():
 		if str(args.algorithm).lower() == "tree":
 
 			algName="tree_regressor"
-			treeRegressor=classes.regressor.tree_regressor(musicData,min_impurity_decrease=1)
-			treeRegressor.fit()
-			shap=shap_values(treeRegressor,preShapConfig=False)
+			_regressor=classes.regressor.tree_regressor(musicData,min_impurity_decrease=1)
 
 		#======= #Random forest
 		elif str(args.algorithm).lower() == "rf":
-
 			algName="random_forest"
-			randon_forest_regressor=classes.regressor.randon_forest_regressor(musicData,min_impurity_decrease=0.001,n_estimators=400)
-			randon_forest_regressor.fit()
-			shap=shap_values(randon_forest_regressor,preShapConfig=False)
+			_regressor=classes.regressor.randon_forest_regressor(musicData,min_impurity_decrease=0.001,n_estimators=400)
 
 		else:
-
 			algName="xgboost"
-			xgboost_regressor=classes.regressor.xgboost_regressor(musicData,learning_rate=0.3,max_depth=10,subsample=1,n_jobs=4)
-			xgboost_regressor.fit()
-			shap=shap_values(xgboost_regressor)
+			_regressor=classes.regressor.xgboost_regressor(musicData,learning_rate=0.3,max_depth=10,subsample=1,n_jobs=4)
+		
+		_regressor.fit()
+		shap=shap_values(_regressor,preShapConfig=False)
 
 		if str(args.shapPlot).lower() == "tree_explainer" or  args.shapPlot == None:
 			shap.tree_explainer(algName+"-"+namePS)
@@ -155,6 +150,9 @@ def main():
 			if musicID==None:
 				print("Parametro musicPop ou musicName sao necessario porem nao validos")
 			else:
+				predict=_regressor.predict([musicData.xTest.iloc[musicID]])
+				print("Valor predito: "+str(predict))
+				print("Valor real: "+str(musicData.yTest.iloc[musicID]))
 				shap.music_decision_plot(algName+"-"+musicName,musID=musicID)
 
 if __name__ == '__main__':
