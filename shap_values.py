@@ -85,13 +85,13 @@ def main():
 
 	else:
 		#Aplicando one hot enconding
-		musicData.useOneHotEncoder(musicData.df, 'main_genre','genre-')
+		musicData.useOneHotEncoder( 'main_genre','genre-')
 
-	musicData.useOneHotEncoder(musicData.df, 'music_lang')
+	musicData.useOneHotEncoder('music_lang')
 
 	#obtendo release time - tempo em meses em que a musica foi lancada
 	try:
-		musicData.monthsAfterRelease(musicData.df,'release_date')
+		musicData.monthsAfterRelease('release_date')
 
 	except:
 		print(' release_time nao encontrada: '+str(traceback.format_exc()))
