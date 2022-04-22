@@ -1,22 +1,22 @@
 from classes.musicData import music_data_entity, get_prep_mus_data
 import classes.regressor
-import transform
 import traceback
 import pandas as pd
 import numpy as np
 import copy
 
 musicData=get_prep_mus_data()
+musicData.df.drop(columns=['music_name'],inplace=True)
 
 #Aplicando one hot enconding
-musicData.df = transform.useOneHotEncoder(musicData.df, 'main_genre','genre-')
-musicData.df = transform.useOneHotEncoder(musicData.df, 'music_lang')
+musicData.useOneHotEncoder('main_genre','genre-')
+musicData.useOneHotEncoder('music_lang')
 
 musicData.df.drop(columns=['artPopularity'],inplace=True)
 
 #obtendo release time - tempo em meses em que a musica foi lancada
 try:
-	musicData.df = transform.monthsAfterRelease(musicData.df,'release_date')
+	musicData.monthsAfterRelease(musicData.df,'release_date')
 
 except:
 	print(' release_time nao encontrada: '+str(traceback.format_exc()))
@@ -32,13 +32,14 @@ linear_grid_params={
 linear_regressor=classes.regressor.linear_regressor(musicData)
 print(linear_regressor.grid_search(linear_grid_params))
 print(linear_regressor.get_grid_best_score())
-'''
+print(linear_regressor.algorithm)
+#'''
 #======= KNN #=======
 
 #regressor score
 
 #GRID search 
-'''
+#'''
 KNN_grid_params={
 	'n_neighbors':[10,20,30,50,100,200],
 	'weights':['uniform', 'distance']
@@ -48,7 +49,7 @@ print(knn_regressor.grid_search(KNN_grid_params))
 print(knn_regressor.get_grid_best_score())
 #'''
 
-#'''
+'''
 #Tree score
 tree_grid_params={
 	'criterion':["squared_error","absolute_error","friedman_mse","poisson"],
@@ -62,11 +63,15 @@ print("tree_regressor get_grid_best_estimator: "+str(tree_regressor.get_grid_bes
 print("tree_regressor get_grid_best_score: "+str(tree_regressor.get_grid_best_score()))
 
 #'''
+
+'''
 #Random forest
 rf_grid_params={
 	'criterion':["squared_error"],
-	'min_impurity_decrease':[0.0005,0.005,0.001,0.05],
-	'n_estimators':[100,200,400]
+	#'min_impurity_decrease':[0.005,0.001,0.01,0.1],
+	'min_impurity_decrease':[0.01,0.003,0.005,0.007],
+	'n_estimators':[200]
+	#'n_estimators':[100,200,400]
 }
 
 randon_forest_regressor=classes.regressor.randon_forest_regressor(musicData)

@@ -123,15 +123,15 @@ class tree_regressor(regressor):
 		self.params=params
 		self.algorithm="tree_regressor"
 
-	def plot_tree(self):
+	def plot_tree(self,name=""):
 		dot_data = tree.export_graphviz(self.model, out_file=None, 
                     feature_names= self.musicData.df.columns,  
                     filled=True, rounded=True,  
                     special_characters=True)  
 
 		graph = graphviz.Source(dot_data) 
-		graph.render("decision_tree") 
-		pylab.savefig('decisionTree.png')
+		graph.render(name+"__decision_tree") 
+		pylab.savefig(name+"__decisionTree.png")
 
 class randon_forest_regressor(regressor):
 

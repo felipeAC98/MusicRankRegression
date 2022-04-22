@@ -1,7 +1,6 @@
 from classes.musicData import music_data_entity, get_prep_mus_vis_data
 from classes.regressor import regressor
 from classes.dataVisualization import data_visualization
-import transform
 import traceback
 import pandas as pd
 import numpy as np
@@ -11,7 +10,7 @@ musicData=get_prep_mus_vis_data()
 
 #obtendo release time - tempo em meses em que a musica foi lancada
 try:
-	musicData.df = transform.monthsAfterRelease(musicData.df,'release_time')
+	musicData.monthsAfterRelease(musicData.df,'release_time')
 
 except:
 	print(' release_time nao encontrada: '+str(traceback.format_exc()))
@@ -37,6 +36,6 @@ dataVisualization=data_visualization(musicData)
 #Precisa corrigir, mas eh um plot interessante
 #dataVisualization.plot_boxplot(targetFeature1="release_date",targetFeature2="popularity")
 
-#dataVisualization.plot_corr_matrix()
+dataVisualization.plot_corr_matrix()
 
-dataVisualization.plot_boxplot(targetFeature2="popularity",targetFeature1="totalFollowers",length=30, height=55,yLabel="Popularidade",xLabel="Total seguidores")
+#dataVisualization.plot_boxplot(targetFeature2="popularity",targetFeature1="totalFollowers",length=30, height=55,yLabel="Popularidade",xLabel="Total seguidores")

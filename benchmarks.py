@@ -1,6 +1,5 @@
 from classes.musicData import music_data_entity, get_prep_mus_data
 import classes.regressor
-import transform
 import traceback
 import pandas as pd
 import numpy as np
@@ -42,7 +41,7 @@ def main():
 	#Verificando se o teste do modelo sera sobre os atributos de teste ou treino
 	else:
 		#Aplicando one hot enconding
-		musicData.df = transform.useOneHotEncoder(musicData.df, 'main_genre','genre-')
+		musicData.useOneHotEncoder('main_genre','genre-')
 		print(" Parametros nao foram dropados")
 
 		if str(args.dropArtPopularity).lower() != "false":
@@ -53,11 +52,11 @@ def main():
 		musicData.df.drop(columns=['totalFollowers'],inplace=True)
 		print("Removendo totalFollowers")
 
-	musicData.df = transform.useOneHotEncoder(musicData.df, 'music_lang')
+	musicData.useOneHotEncoder('music_lang')
 
 	#obtendo release time - tempo em meses em que a musica foi lancada
 	try:
-		musicData.df = transform.monthsAfterRelease(musicData.df,'release_date')
+		musicData.monthsAfterRelease('release_date')
 
 	except:
 		print(' release_time nao encontrada: '+str(traceback.format_exc()))
@@ -85,13 +84,13 @@ def main():
 
 		#======= Linear Regressor #=======
 		if str(args.algorithm).lower() == "linear" or  args.algorithm == None:
-			linear_regressor=classes.regressor.linear_regressor(musicDataTemp,fit_intercept=False)
+			linear_regressor=classes.regressor.linear_regressor(musicDataTemp,fit_intercept=True)
 			linear_regressor.fit()
 			linear_regressor.get_scores(isTest=isTest)
 
 		#======= KNN #=======
 		if str(args.algorithm).lower() == "knn" or  args.algorithm == None:
-			knn_regressor=classes.regressor.knn_regressor(musicDataTemp,n_neighbors=200)
+			knn_regressor=classes.regressor.knn_regressor(musicDataTemp,n_neighbors=50)
 			knn_regressor.fit()
 			knn_regressor.get_scores(isTest=isTest)
 
@@ -103,7 +102,7 @@ def main():
 
 		#======= #Random forest score
 		if str(args.algorithm).lower() == "rf" or  args.algorithm == None:			
-			randon_forest_regressor=classes.regressor.randon_forest_regressor(musicDataTemp,min_impurity_decrease=0.001,n_estimators=200)
+			randon_forest_regressor=classes.regressor.randon_forest_regressor(musicDataTemp,min_impurity_decrease=0.01,n_estimators=200)
 			randon_forest_regressor.fit()
 			randon_forest_regressor.get_scores(isTest=isTest)
 		#'''

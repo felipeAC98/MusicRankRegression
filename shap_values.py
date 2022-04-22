@@ -1,7 +1,6 @@
 from classes.musicData import music_data_entity, get_prep_mus_data
 import classes.regressor
 from classes.analytics import shap_values
-import transform
 import numpy as np
 import sys
 import argparse
@@ -53,6 +52,9 @@ def main():
 	parser.add_argument('--shapPlot')					#Define o tipo de plot que sera realizado pelo SHAP, quando nao definido todos serao plotados
 	parser.add_argument('--namePS')						#Observacao a mais para colocar no nome do arquivo gerado
 
+	#Parametro extra, somoente util para quando for plotar arvore de decisao
+	parser.add_argument('--plotTree')						#Observacao a mais para colocar no nome do arquivo gerado
+
 	args = parser.parse_args()
 
 	musicData=get_prep_mus_data()
@@ -82,13 +84,13 @@ def main():
 
 	else:
 		#Aplicando one hot enconding
-		musicData.df = transform.useOneHotEncoder(musicData.df, 'main_genre','genre-')
+		musicData.useOneHotEncoder(musicData.df, 'main_genre','genre-')
 
-	musicData.df = transform.useOneHotEncoder(musicData.df, 'music_lang')
+	musicData.useOneHotEncoder(musicData.df, 'music_lang')
 
 	#obtendo release time - tempo em meses em que a musica foi lancada
 	try:
-		musicData.df = transform.monthsAfterRelease(musicData.df,'release_date')
+		musicData.monthsAfterRelease(musicData.df,'release_date')
 
 	except:
 		print(' release_time nao encontrada: '+str(traceback.format_exc()))
@@ -129,12 +131,12 @@ def main():
 		if str(args.algorithm).lower() == "tree":
 
 			algName="tree_regressor"
-			_regressor=classes.regressor.tree_regressor(musicData,min_impurity_decrease=1)
+			_regressor=classes.regressor.tree_regressor(musicData,min_impurity_decrease=0.2)
 
 		#======= #Random forest
 		elif str(args.algorithm).lower() == "rf":
 			algName="random_forest"
-			_regressor=classes.regressor.randon_forest_regressor(musicData,min_impurity_decrease=0.001,n_estimators=200)
+			_regressor=classes.regressor.randon_forest_regressor(musicData,min_impurity_decrease=0.01,n_estimators=200)
 
 		else:
 			algName="xgboost"
@@ -144,8 +146,11 @@ def main():
 		_regressor.get_scores()
 		shap=shap_values(_regressor,preShapConfig=False)
 
-		if str(args.shapPlot).lower() == "tree_explainer" or  args.shapPlot == None:
-			shap.tree_explainer(algName+"-"+namePS)
+		if str(args.plotTree).lower() == "true" and str(args.algorithm).lower() == "tree":
+			_regressor.plot_tree()
+
+		#if str(args.shapPlot).lower() == "tree_explainer" or  args.shapPlot == None:
+		#	shap.tree_explainer(algName+"-"+namePS)
 
 		if str(args.shapPlot).lower() == "explainer" or  args.shapPlot == None:
 			shap.explainer(algName+"-"+namePS)

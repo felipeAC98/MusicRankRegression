@@ -7,6 +7,7 @@ class shap_values():
 		self.regressor=regressor
 		self.dataPercent=dataPercent
 		self.preShapConfig=preShapConfig
+		self.nSamples=int(len(self.regressor.musicData.df.index)*dataPercent)
 
 		if self.preShapConfig==True:
 			self.set_explainer_config(dataPercent=self.dataPercent)
@@ -14,7 +15,6 @@ class shap_values():
 	def set_explainer_config(self,dataPercent=1,musID=None):
 		self.explainer=shap.Explainer(self.regressor.get_model())
 		if musID==None:
-			self.nSamples=int(len(self.regressor.musicData.df.index)*dataPercent)
 			self.shapValues=self.explainer.shap_values(self.regressor.musicData.df)[:self.nSamples]
 		else:
 			self.shapValues=self.explainer.shap_values(self.regressor.musicData.xTest.iloc[musID])
