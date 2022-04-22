@@ -5,6 +5,7 @@ import numpy as np
 import sys
 import argparse
 import copy
+import parameters as ps
 
 def get_music_ID_by_name(musicData,musicName="Bang",dropColumns=True):
 	musicID = musicData.df.index[musicData.df['music_name'] == musicName].tolist()[0]
@@ -131,12 +132,12 @@ def main():
 		if str(args.algorithm).lower() == "tree":
 
 			algName="tree_regressor"
-			_regressor=classes.regressor.tree_regressor(musicData,min_impurity_decrease=0.2)
+			_regressor=classes.regressor.tree_regressor(musicData,min_impurity_decrease=ps.tree_min_impurity_decrease)
 
 		#======= #Random forest
 		elif str(args.algorithm).lower() == "rf":
 			algName="random_forest"
-			_regressor=classes.regressor.randon_forest_regressor(musicData,min_impurity_decrease=0.01,n_estimators=200)
+			_regressor=classes.regressor.randon_forest_regressor(musicData,min_impurity_decrease=ps.rf_min_impurity_decrease,n_estimators=ps.n_estimators)
 
 		else:
 			algName="xgboost"

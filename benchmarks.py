@@ -7,7 +7,7 @@ import copy
 import time
 import sys
 import argparse
-
+import parameters as ps
 
 def main():
 
@@ -84,25 +84,25 @@ def main():
 
 		#======= Linear Regressor #=======
 		if str(args.algorithm).lower() == "linear" or  args.algorithm == None:
-			linear_regressor=classes.regressor.linear_regressor(musicDataTemp,fit_intercept=True)
+			linear_regressor=classes.regressor.linear_regressor(musicDataTemp,fit_intercept=ps.fit_intercept)
 			linear_regressor.fit()
 			linear_regressor.get_scores(isTest=isTest)
 
 		#======= KNN #=======
 		if str(args.algorithm).lower() == "knn" or  args.algorithm == None:
-			knn_regressor=classes.regressor.knn_regressor(musicDataTemp,n_neighbors=50)
+			knn_regressor=classes.regressor.knn_regressor(musicDataTemp,n_neighbors=ps.n_neighbors)
 			knn_regressor.fit()
 			knn_regressor.get_scores(isTest=isTest)
 
 		#======= Tree score
 		if str(args.algorithm).lower() == "tree" or  args.algorithm == None:
-			tree_regressor=classes.regressor.tree_regressor(musicDataTemp,min_impurity_decrease=0.2)
+			tree_regressor=classes.regressor.tree_regressor(musicDataTemp,min_impurity_decrease=ps.tree_min_impurity_decrease)
 			tree_regressor.fit()
 			tree_regressor.get_scores(isTest=isTest)
 
 		#======= #Random forest score
 		if str(args.algorithm).lower() == "rf" or  args.algorithm == None:			
-			randon_forest_regressor=classes.regressor.randon_forest_regressor(musicDataTemp,min_impurity_decrease=0.001,n_estimators=200)
+			randon_forest_regressor=classes.regressor.randon_forest_regressor(musicDataTemp,min_impurity_decrease=ps.rf_min_impurity_decrease,n_estimators=ps.n_estimators)
 			randon_forest_regressor.fit()
 			randon_forest_regressor.get_scores(isTest=isTest)
 		#'''
