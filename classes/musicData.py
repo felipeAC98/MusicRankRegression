@@ -83,11 +83,11 @@ class music_data_entity():
 
 		if merge==False:
 			#retornando df com o one hot encode ja incluido
-			return self.df.join(enc_df)
+			self.df=self.df.join(enc_df)
 
 		else:
 			#para casos onde as features do novo e antigo df forem as mesmas
-			return mergeOneHotEncoder(self.df, enc_df)
+			self.df= mergeOneHotEncoder(self.df, enc_df)
 
 	def mergeOneHotEncoder(self, newEncData):
 		print("mergeOneHotEncoder")
