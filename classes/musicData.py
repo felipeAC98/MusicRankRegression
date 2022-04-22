@@ -192,7 +192,7 @@ def get_prep_mus_data():
 
 	features=_4mulaFeatureNames+['spotify_trackID']+_spotifyBasicAudioFeature+['spotifyAlbum_id']+['release_date'] +['popularity']+['spotifyArt_id']+_spotifyAudioAnalysisTrack+_spotifyAudioAnalysis+['period']+['position']+['mus_rank']+['art_rank']
 
-	musData=music_data_entity("matchSpotify4Mula-metadata",features)
+	musData=music_data_entity("data/matchSpotify4Mula-metadata",features)
 	musData.read_csv()
 	
 	#Criacao de vetor com as features para remocao
@@ -202,7 +202,7 @@ def get_prep_mus_data():
 
 	#Obtendo dadaos somente do spotify
 	features=['spotify_trackID','spotify_artID','totalFollowers','artPopularity']
-	spotifyData=music_data_entity("spotifyOnlyFeatures",features)
+	spotifyData=music_data_entity("data/spotifyOnlyFeatures",features)
 	spotifyData.read_csv()
 	#Criacao de vetor com as features para remocao
 	featuresParaRemover=['spotify_trackID','spotify_artID']

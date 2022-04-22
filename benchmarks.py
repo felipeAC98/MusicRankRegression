@@ -102,7 +102,7 @@ def main():
 
 		#======= #Random forest score
 		if str(args.algorithm).lower() == "rf" or  args.algorithm == None:			
-			randon_forest_regressor=classes.regressor.randon_forest_regressor(musicDataTemp,min_impurity_decrease=0.01,n_estimators=200)
+			randon_forest_regressor=classes.regressor.randon_forest_regressor(musicDataTemp,min_impurity_decrease=0.001,n_estimators=200)
 			randon_forest_regressor.fit()
 			randon_forest_regressor.get_scores(isTest=isTest)
 		#'''
