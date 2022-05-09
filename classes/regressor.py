@@ -7,12 +7,12 @@ from sklearn import tree
 from sklearn.model_selection import GridSearchCV, TimeSeriesSplit
 from sklearn.neural_network import MLPRegressor
 import graphviz 
-import pylab
 import xgboost as xgb
 from keras.models import Sequential
 from keras.layers import Dense
 import numpy as np
 from sklearn.linear_model import LinearRegression
+import matplotlib.pyplot as plt
 
 class regressor():
 
@@ -131,7 +131,7 @@ class tree_regressor(regressor):
 
 		graph = graphviz.Source(dot_data) 
 		graph.render(name+"__decision_tree") 
-		pylab.savefig(name+"__decisionTree.png")
+		plt.savefig(name+"__decisionTree.png")
 
 class randon_forest_regressor(regressor):
 
