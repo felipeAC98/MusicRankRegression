@@ -216,6 +216,19 @@ def get_prep_mus_data():
 
 	return musData
 
+def get_prep_mus_data_spotify_only(dataset="data/spotifyDataset.csv"):
+
+	_spotifyBasicAudioFeature=['danceability','energy','key','mode','speechiness','loudness','acousticness','instrumentalness','liveness','valence','tempo','duration_ms','time_signature']
+
+	features=['release_date']+['popularity']+_spotifyBasicAudioFeature+['totalFollowers']+['genres']
+
+	musData=music_data_entity(dataset,features)
+	musData.read_csv()
+	
+	musData.df=musData.df.dropna()
+
+	return musData
+
 def get_prep_mus_vis_data():
 
 	_4mulaFeatureNames=['music_id', 'music_name', 'music_lang', 'art_id','art_name', 'art_rank4Mula', 'main_genre', 'related_genre','musicnn_tags']

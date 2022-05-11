@@ -1,4 +1,4 @@
-from classes.musicData import music_data_entity, get_prep_mus_data
+from classes.musicData import music_data_entity, get_prep_mus_data, get_prep_mus_data_spotify_only
 import classes.regressor
 import traceback
 import pandas as pd
@@ -14,6 +14,8 @@ def main():
 	#Obtencao dos parametros
 	parser = argparse.ArgumentParser(description='args')
 	parser.add_argument('--algorithm') 					#Algoritmo que sera utilizado para o teste, todos serao utilizados caso nao seja definido
+	parser.add_argument('--spotifyFOnly')				#Define se a base de dados sera somente de dados do spotify
+	parser.add_argument('--dataset')				 	#Define o dataset a ser utilizado
 	parser.add_argument('--dropDataTest')				#Habilita ou nao o teste de drop dos dados do dataset para construcao doss modelos
 	parser.add_argument('--set')						#Define se ira utilizar o conjunto de treino ou de testes para o teste do modelo
 	parser.add_argument('--dropParams')					#Define se ira utilizar somente os parametros principais definidos manualmente 
@@ -29,30 +31,36 @@ def main():
 		isTest=True
 		print("isTest: "+str(isTest))
 
-	musicData=get_prep_mus_data()
-	musicData.df.drop(columns=['music_name'],inplace=True)
+	if str(args.spotifyFOnly).lower() == "true":
+		dataset="data/spotifyDataset"
+		if args.dataset != None:
+			dataset=str(args.dataset)
+		musicData=get_prep_mus_data_spotify_only(dataset=dataset)
 
-	if str(args.dropParams).lower() == "true":
-		#Removendo parametros que nao estao entre estes desta lista
-		for column in musicData.df.columns:
-			if column not in ['popularity','release_date','music_lang','totalFollowers','danceability','loudness','liveness']:
-				musicData.df.drop(columns=[column],inplace=True)
-
-	#Verificando se o teste do modelo sera sobre os atributos de teste ou treino
-	else:
 		#Aplicando one hot enconding
-		musicData.useOneHotEncoder('main_genre','genre-')
-		print(" Parametros nao foram dropados")
+		musicData.useOneHotEncoder('genres','genre-')
 
-		if str(args.dropArtPopularity).lower() != "false":
-			musicData.df.drop(columns=['artPopularity'],inplace=True)
-			print("Removendo artPopularity")
+	else:
+		musicData=get_prep_mus_data()
+		musicData.df.drop(columns=['music_name'],inplace=True)
 
-	if str(args.dropFollowers).lower() == "true":
-		musicData.df.drop(columns=['totalFollowers'],inplace=True)
-		print("Removendo totalFollowers")
+		if str(args.dropParams).lower() == "true":
+			#Removendo parametros que nao estao entre estes desta lista
+			for column in musicData.df.columns:
+				if column not in ['popularity','release_date','music_lang','totalFollowers','danceability','loudness','liveness']:
+					musicData.df.drop(columns=[column],inplace=True)
 
-	musicData.useOneHotEncoder('music_lang')
+		#Verificando se o teste do modelo sera sobre os atributos de teste ou treino
+		else:
+			#Aplicando one hot enconding
+			musicData.useOneHotEncoder('main_genre','genre-')
+			print(" Parametros nao foram dropados")
+
+			if str(args.dropArtPopularity).lower() != "false":
+				musicData.df.drop(columns=['artPopularity'],inplace=True)
+				print("Removendo artPopularity")
+
+		musicData.useOneHotEncoder('music_lang')
 
 	#obtendo release time - tempo em meses em que a musica foi lancada
 	try:
@@ -60,6 +68,10 @@ def main():
 
 	except:
 		print(' release_time nao encontrada: '+str(traceback.format_exc()))
+
+	if str(args.dropFollowers).lower() == "true":
+		musicData.df.drop(columns=['totalFollowers'],inplace=True)
+		print("Removendo totalFollowers")
 
 	musicData.normalize()
 
