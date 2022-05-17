@@ -8,8 +8,6 @@ from sklearn.model_selection import GridSearchCV, TimeSeriesSplit
 from sklearn.neural_network import MLPRegressor
 import graphviz 
 import xgboost as xgb
-from keras.models import Sequential
-from keras.layers import Dense
 import numpy as np
 from sklearn.linear_model import LinearRegression
 import matplotlib.pyplot as plt
@@ -206,6 +204,8 @@ class keras_sequential_regressor(regressor):
 
 	def __init__(self, musicData, **params):
 		super().__init__(musicData)
+		from keras.models import Sequential
+		from keras.layers import Dense
 		self.model= self.keras_sequential_model(**params)
 		self.fit()
 		self.params=params
