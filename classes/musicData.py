@@ -4,6 +4,7 @@ from sklearn.model_selection import train_test_split
 import traceback
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import MultiLabelBinarizer
 
 class music_data_entity():
 
@@ -12,7 +13,7 @@ class music_data_entity():
 		self.df=None
 		self.features=features
 
-	def read_csv(self, csvFile=None, sep=',', featuresList = None):
+	def read_csv(self, csvFile=None, sep=';', featuresList = None):
 		if csvFile==None:
 			csvFile=self.nomeDB+".csv"
 
@@ -88,6 +89,19 @@ class music_data_entity():
 		else:
 			#para casos onde as features do novo e antigo df forem as mesmas
 			self.df= mergeOneHotEncoder(self.df, enc_df)
+
+	def useMultiLabelBinarizer(self,feature):
+		print(self.df[feature][0][0])
+		mlb = MultiLabelBinarizer()
+		mlbFit=mlb.fit_transform(self.df[feature])
+		print(list(mlb.classes_))
+		#mlb_df = pd.DataFrame(mlbArray,columns=mlb.classes_)
+
+		encoded = pd.DataFrame(mlbFit, columns=mlb.classes_, index=self.df.index)
+		self.df.drop(columns=[feature],inplace=True)
+		self.df=self.df.join(encoded)
+		print(mlbFit)
+		#print(mlb.inverse_transform(mlbFit))
 
 	def mergeOneHotEncoder(self, newEncData):
 		print("mergeOneHotEncoder")

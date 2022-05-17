@@ -37,8 +37,15 @@ def main():
 			dataset=str(args.dataset)
 		musicData=get_prep_mus_data_spotify_only(dataset=dataset)
 
-		#Aplicando one hot enconding
-		musicData.useOneHotEncoder('genres','genre-')
+		if str(args.dropParams).lower() == "true":
+			musicData.df.drop(columns=['genres'],inplace=True)
+			
+		else:
+			print(musicData.df.head())
+
+			#Aplicando one hot enconding
+			musicData.useMultiLabelBinarizer('genres')
+			print(musicData.df.head())
 
 	else:
 		musicData=get_prep_mus_data()
