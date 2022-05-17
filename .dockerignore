@@ -1,0 +1,6 @@
+.git/
+__pycache__/
+legado/
+venv/
+vev/
+.gitignore
