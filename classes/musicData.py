@@ -5,6 +5,7 @@ import traceback
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import MultiLabelBinarizer
+from ast import literal_eval
 
 class music_data_entity():
 
@@ -13,14 +14,14 @@ class music_data_entity():
 		self.df=None
 		self.features=features
 
-	def read_csv(self, csvFile=None, sep=';', featuresList = None):
+	def read_csv(self, csvFile=None, sep='|', featuresList = None):
 		if csvFile==None:
 			csvFile=self.nomeDB+".csv"
 
 		if featuresList==None:
 			featuresList=self.features
 
-		self.df=pd.read_csv(csvFile, sep=sep, names = featuresList)
+		self.df=pd.read_csv(csvFile, sep=sep, names = featuresList,converters={"genres": literal_eval})
 
 	def drop_columns(self, columns):
 		for column in columns:
@@ -91,16 +92,14 @@ class music_data_entity():
 			self.df= mergeOneHotEncoder(self.df, enc_df)
 
 	def useMultiLabelBinarizer(self,feature):
-		print(self.df[feature][0][0])
+		print("useMultiLabelBinarizer")
 		mlb = MultiLabelBinarizer()
 		mlbFit=mlb.fit_transform(self.df[feature])
-		print(list(mlb.classes_))
 		#mlb_df = pd.DataFrame(mlbArray,columns=mlb.classes_)
 
 		encoded = pd.DataFrame(mlbFit, columns=mlb.classes_, index=self.df.index)
 		self.df.drop(columns=[feature],inplace=True)
 		self.df=self.df.join(encoded)
-		print(mlbFit)
 		#print(mlb.inverse_transform(mlbFit))
 
 	def mergeOneHotEncoder(self, newEncData):
