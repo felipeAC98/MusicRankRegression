@@ -1,8 +1,8 @@
-FROM python:slim
-WORKDIR /musicRankRegression/
-ARG PORT_BUILD=6000
-ENV PORT=$PORT_BUILD
-EXPOSE $PORT_BUILD
+FROM python:slim as python_libs
+WORKDIR /python_libs
 COPY requirements.txt .
 RUN pip install -r requirements.txt
+
+FROM python:slim
+COPY --from=python_libs /usr/local/lib/python3.10/site-packages /usr/local/lib/python3.10/site-packages
 ENTRYPOINT bash
